@@ -15,113 +15,128 @@
   <body>
     <div class="export-wrapper">
       <!-- Top Bar -->
-      <header class="app-header">
+      <header class="app-header" role="banner">
         <div class="logo-area">
-          <button class="menu-toggle hide-desktop" onclick="toggleSidebar()">
-            <iconify-icon icon="lucide:menu" class="icon-lg"></iconify-icon>
+          <button 
+            class="menu-toggle hide-desktop" 
+            onclick="toggleSidebar()"
+            aria-label="Abrir menú de navegación"
+            aria-expanded="false"
+            aria-controls="sidebar-nav"
+          >
+            <iconify-icon icon="lucide:menu" class="icon-lg" aria-hidden="true"></iconify-icon>
           </button>
-          <div class="logo-icon flex-center">
+          <figure class="logo-icon flex-center" aria-hidden="true">
             <iconify-icon icon="lucide:box" class="icon-lg"></iconify-icon>
-          </div>
-          <span>BackArch</span>
+          </figure>
+          <strong>BackArch</strong>
         </div>
 
-        <div class="version-control hide-mobile">
-          <iconify-icon icon="lucide:layers" class="icon-muted"></iconify-icon>
+        <nav class="version-control hide-mobile" aria-label="Control de versiones">
+          <iconify-icon icon="lucide:layers" class="icon-muted" aria-hidden="true"></iconify-icon>
           <span>Production Stack (v2.1.0)</span>
           <iconify-icon
             icon="lucide:chevron-down"
             class="icon-muted"
+            aria-hidden="true"
           ></iconify-icon>
-        </div>
+        </nav>
 
-        <div class="header-actions">
-          <div class="btn-primary">
-            <iconify-icon icon="lucide:zap" class="icon-md"></iconify-icon>
+        <nav class="header-actions" aria-label="Acciones principales">
+          <button class="btn-primary" type="button" aria-label="Generar código">
+            <iconify-icon icon="lucide:zap" class="icon-md" aria-hidden="true"></iconify-icon>
             <span>Generate</span>
-          </div>
-        </div>
+          </button>
+        </nav>
       </header>
 
-      <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
+      <div class="sidebar-overlay" onclick="toggleSidebar()" aria-hidden="true"></div>
 
       <div class="main-workspace">
         <!-- Left Sidebar -->
-        <aside class="sidebar-left">
-          <div class="sidebar-header">Components</div>
-          <div class="component-list">
-            <div class="component-item">
-              <div class="component-icon endpoint flex-center">
-                <iconify-icon
-                  icon="lucide:globe"
-                  class="icon-md"
-                ></iconify-icon>
-              </div>
-              <span>Endpoint</span>
-            </div>
-            <div class="component-item">
-              <div class="component-icon model flex-center">
-                <iconify-icon icon="lucide:box" class="icon-md"></iconify-icon>
-              </div>
-              <span>Model</span>
-            </div>
-            <div class="component-item">
-              <div class="component-icon service flex-center">
-                <iconify-icon icon="lucide:cpu" class="icon-md"></iconify-icon>
-              </div>
-              <span>Service</span>
-            </div>
-            <div class="component-item">
-              <div class="component-icon repository flex-center">
-                <iconify-icon
-                  icon="lucide:archive"
-                  class="icon-md"
-                ></iconify-icon>
-              </div>
-              <span>Repository</span>
-            </div>
-            <div class="component-item">
-              <div class="component-icon database flex-center">
-                <iconify-icon
-                  icon="lucide:database"
-                  class="icon-md"
-                ></iconify-icon>
-              </div>
-              <span>Database</span>
-            </div>
-          </div>
+        <aside class="sidebar-left" id="sidebar-nav" role="complementary" aria-label="Panel de componentes">
+          <h2 class="sidebar-header">Components</h2>
+          <nav class="component-list" aria-label="Lista de componentes disponibles">
+            <ul role="list">
+              <li class="component-item" draggable="true" role="listitem">
+                <figure class="component-icon endpoint flex-center" aria-hidden="true">
+                  <iconify-icon
+                    icon="lucide:globe"
+                    class="icon-md"
+                  ></iconify-icon>
+                </figure>
+                <span>Endpoint</span>
+              </li>
+              <li class="component-item" draggable="true" role="listitem">
+                <figure class="component-icon model flex-center" aria-hidden="true">
+                  <iconify-icon icon="lucide:box" class="icon-md"></iconify-icon>
+                </figure>
+                <span>Model</span>
+              </li>
+              <li class="component-item" draggable="true" role="listitem">
+                <figure class="component-icon service flex-center" aria-hidden="true">
+                  <iconify-icon icon="lucide:cpu" class="icon-md"></iconify-icon>
+                </figure>
+                <span>Service</span>
+              </li>
+              <li class="component-item" draggable="true" role="listitem">
+                <figure class="component-icon repository flex-center" aria-hidden="true">
+                  <iconify-icon
+                    icon="lucide:archive"
+                    class="icon-md"
+                  ></iconify-icon>
+                </figure>
+                <span>Repository</span>
+              </li>
+              <li class="component-item" draggable="true" role="listitem">
+                <figure class="component-icon database flex-center" aria-hidden="true">
+                  <iconify-icon
+                    icon="lucide:database"
+                    class="icon-md"
+                  ></iconify-icon>
+                </figure>
+                <span>Database</span>
+              </li>
+            </ul>
+          </nav>
         </aside>
 
-        <main class="canvas-area">
-          <div class="canvas-node" style="top: 80px; left: 120px">
-            <div class="node-header">
-              <div class="node-icon endpoint flex-center">
-                <iconify-icon
-                  icon="lucide:globe"
-                  class="icon-sm"
-                ></iconify-icon>
+        <main class="canvas-area" role="main" aria-label="Área de diseño del canvas">
+          <section class="canvas-nodes" aria-label="Nodos del diagrama">
+            <article class="canvas-node" style="top: 80px; left: 120px" aria-label="Nodo Endpoint GET /users">
+              <header class="node-header">
+                <figure class="node-icon endpoint flex-center" aria-hidden="true">
+                  <iconify-icon
+                    icon="lucide:globe"
+                    class="icon-sm"
+                  ></iconify-icon>
+                </figure>
+                <h3>GET /users</h3>
+              </header>
+              <div class="node-content">
+                <p>Returns list of active users.</p>
+                <aside class="node-meta">
+                  <small>Auth: Bearer Token</small>
+                </aside>
               </div>
-              <span>GET /users</span>
-            </div>
-            <div class="node-content">
-              Returns list of active users.
-              <div class="node-meta">Auth: Bearer Token</div>
-            </div>
-          </div>
+            </article>
 
-          <div class="canvas-node" style="top: 80px; left: 400px">
-            <div class="node-header">
-              <div class="node-icon service flex-center">
-                <iconify-icon icon="lucide:cpu" class="icon-sm"></iconify-icon>
+            <article class="canvas-node" style="top: 80px; left: 400px" aria-label="Nodo Service UserService">
+              <header class="node-header">
+                <figure class="node-icon service flex-center" aria-hidden="true">
+                  <iconify-icon icon="lucide:cpu" class="icon-sm"></iconify-icon>
+                </figure>
+                <h3>UserService</h3>
+              </header>
+              <div class="node-content">
+                <p>Handles business logic for user management.</p>
               </div>
-              <span>UserService</span>
-            </div>
-            <div class="node-content">
-              Handles business logic for user management.
-            </div>
-          </div>
+            </article>
+          </section>
 
-          <svg class="canvas-svg">
+          <svg class="canvas-svg" role="img" aria-label="Conexiones entre nodos">
+            <title>Diagrama de conexiones</title>
+            <desc>Línea de conexión entre el endpoint GET /users y el servicio UserService</desc>
             <path
               d="M 322 130 L 400 130"
               stroke="#cbd5e1"
@@ -145,47 +160,53 @@
             </defs>
           </svg>
 
-          <footer class="bottom-panel">
-            <div class="panel-header">
+          <footer class="bottom-panel" role="status" aria-live="polite">
+            <header class="panel-header">
               <iconify-icon
                 icon="lucide:alert-circle"
                 class="icon-lg icon-muted"
+                aria-hidden="true"
               ></iconify-icon>
-              Validation &amp; Feedback
-              <div class="panel-badge">3 Issues Found</div>
-            </div>
-            <div class="panel-content">
-              <div class="log-item warning">
-                <iconify-icon
-                  icon="lucide:alert-triangle"
-                  class="icon-lg icon-warning"
-                ></iconify-icon>
-                <div style="flex: 1">
-                  UserService is missing a repository connection.
-                </div>
-                <span class="log-tag tag-warn">Warning</span>
-              </div>
-              <div class="log-item">
-                <iconify-icon
-                  icon="lucide:info"
-                  class="icon-lg icon-info"
-                ></iconify-icon>
-                <div style="flex: 1">
-                  Consider adding caching to GET /users for better performance.
-                </div>
-                <span class="log-tag tag-info">Suggestion</span>
-              </div>
-              <div class="log-item">
-                <iconify-icon
-                  icon="lucide:info"
-                  class="icon-lg icon-info"
-                ></iconify-icon>
-                <div style="flex: 1">
-                  Database schema validated successfully.
-                </div>
-                <span class="log-tag tag-info">Info</span>
-              </div>
-            </div>
+              <h2>Validation &amp; Feedback</h2>
+              <mark class="panel-badge">3 Issues Found</mark>
+            </header>
+            <section class="panel-content" aria-label="Lista de mensajes de validación">
+              <ul role="log">
+                <li class="log-item warning" role="alert">
+                  <iconify-icon
+                    icon="lucide:alert-triangle"
+                    class="icon-lg icon-warning"
+                    aria-hidden="true"
+                  ></iconify-icon>
+                  <p>
+                    UserService is missing a repository connection.
+                  </p>
+                  <mark class="log-tag tag-warn">Warning</mark>
+                </li>
+                <li class="log-item">
+                  <iconify-icon
+                    icon="lucide:info"
+                    class="icon-lg icon-info"
+                    aria-hidden="true"
+                  ></iconify-icon>
+                  <p>
+                    Consider adding caching to GET /users for better performance.
+                  </p>
+                  <mark class="log-tag tag-info">Suggestion</mark>
+                </li>
+                <li class="log-item">
+                  <iconify-icon
+                    icon="lucide:info"
+                    class="icon-lg icon-info"
+                    aria-hidden="true"
+                  ></iconify-icon>
+                  <p>
+                    Database schema validated successfully.
+                  </p>
+                  <mark class="log-tag tag-info">Info</mark>
+                </li>
+              </ul>
+            </section>
           </footer>
         </main>
       </div>
@@ -195,8 +216,10 @@
       function toggleSidebar() {
         const sidebar = document.querySelector('.sidebar-left');
         const overlay = document.querySelector('.sidebar-overlay');
-        sidebar.classList.toggle('open');
+        const toggleBtn = document.querySelector('.menu-toggle');
+        const isOpen = sidebar.classList.toggle('open');
         overlay.classList.toggle('active');
+        toggleBtn.setAttribute('aria-expanded', isOpen);
       }
     </script>
   </body>
