@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BackArch</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="export-wrapper">
+      <!-- Top Bar -->
+      <header class="app-header">
+        <div class="logo-area">
+          <button class="menu-toggle hide-desktop" onclick="toggleSidebar()">
+            <iconify-icon icon="lucide:menu" class="icon-lg"></iconify-icon>
+          </button>
+          <div class="logo-icon flex-center">
+            <iconify-icon icon="lucide:box" class="icon-lg"></iconify-icon>
+          </div>
+          <span>BackArch</span>
+        </div>
+
+        <div class="version-control hide-mobile">
+          <iconify-icon icon="lucide:layers" class="icon-muted"></iconify-icon>
+          <span>Production Stack (v2.1.0)</span>
+          <iconify-icon
+            icon="lucide:chevron-down"
+            class="icon-muted"
+          ></iconify-icon>
+        </div>
+
+        <div class="header-actions">
+          <div class="btn-primary">
+            <iconify-icon icon="lucide:zap" class="icon-md"></iconify-icon>
+            <span>Generate</span>
+          </div>
+        </div>
+      </header>
+
+      <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+      <div class="main-workspace">
+        <!-- Left Sidebar -->
+        <aside class="sidebar-left">
+          <div class="sidebar-header">Components</div>
+          <div class="component-list">
+            <div class="component-item">
+              <div class="component-icon endpoint flex-center">
+                <iconify-icon
+                  icon="lucide:globe"
+                  class="icon-md"
+                ></iconify-icon>
+              </div>
+              <span>Endpoint</span>
+            </div>
+            <div class="component-item">
+              <div class="component-icon model flex-center">
+                <iconify-icon icon="lucide:box" class="icon-md"></iconify-icon>
+              </div>
+              <span>Model</span>
+            </div>
+            <div class="component-item">
+              <div class="component-icon service flex-center">
+                <iconify-icon icon="lucide:cpu" class="icon-md"></iconify-icon>
+              </div>
+              <span>Service</span>
+            </div>
+            <div class="component-item">
+              <div class="component-icon repository flex-center">
+                <iconify-icon
+                  icon="lucide:archive"
+                  class="icon-md"
+                ></iconify-icon>
+              </div>
+              <span>Repository</span>
+            </div>
+            <div class="component-item">
+              <div class="component-icon database flex-center">
+                <iconify-icon
+                  icon="lucide:database"
+                  class="icon-md"
+                ></iconify-icon>
+              </div>
+              <span>Database</span>
+            </div>
+          </div>
+        </aside>
+
+        <main class="canvas-area">
+          <div class="canvas-node" style="top: 80px; left: 120px">
+            <div class="node-header">
+              <div class="node-icon endpoint flex-center">
+                <iconify-icon
+                  icon="lucide:globe"
+                  class="icon-sm"
+                ></iconify-icon>
+              </div>
+              <span>GET /users</span>
+            </div>
+            <div class="node-content">
+              Returns list of active users.
+              <div class="node-meta">Auth: Bearer Token</div>
+            </div>
+          </div>
+
+          <div class="canvas-node" style="top: 80px; left: 400px">
+            <div class="node-header">
+              <div class="node-icon service flex-center">
+                <iconify-icon icon="lucide:cpu" class="icon-sm"></iconify-icon>
+              </div>
+              <span>UserService</span>
+            </div>
+            <div class="node-content">
+              Handles business logic for user management.
+            </div>
+          </div>
+
+          <svg class="canvas-svg">
+            <path
+              d="M 322 130 L 400 130"
+              stroke="#cbd5e1"
+              stroke-width="2"
+              fill="none"
+              stroke-dasharray="4 4"
+              marker-end="url(#arrow)"
+            ></path>
+            <defs>
+              <marker
+                id="arrow"
+                markerWidth="10"
+                markerHeight="10"
+                refX="9"
+                refY="3"
+                orient="auto"
+                markerUnits="strokeWidth"
+              >
+                <path d="M0,0 L0,6 L9,3 z" fill="#cbd5e1"></path>
+              </marker>
+            </defs>
+          </svg>
+
+          <footer class="bottom-panel">
+            <div class="panel-header">
+              <iconify-icon
+                icon="lucide:alert-circle"
+                class="icon-lg icon-muted"
+              ></iconify-icon>
+              Validation &amp; Feedback
+              <div class="panel-badge">3 Issues Found</div>
+            </div>
+            <div class="panel-content">
+              <div class="log-item warning">
+                <iconify-icon
+                  icon="lucide:alert-triangle"
+                  class="icon-lg icon-warning"
+                ></iconify-icon>
+                <div style="flex: 1">
+                  UserService is missing a repository connection.
+                </div>
+                <span class="log-tag tag-warn">Warning</span>
+              </div>
+              <div class="log-item">
+                <iconify-icon
+                  icon="lucide:info"
+                  class="icon-lg icon-info"
+                ></iconify-icon>
+                <div style="flex: 1">
+                  Consider adding caching to GET /users for better performance.
+                </div>
+                <span class="log-tag tag-info">Suggestion</span>
+              </div>
+              <div class="log-item">
+                <iconify-icon
+                  icon="lucide:info"
+                  class="icon-lg icon-info"
+                ></iconify-icon>
+                <div style="flex: 1">
+                  Database schema validated successfully.
+                </div>
+                <span class="log-tag tag-info">Info</span>
+              </div>
+            </div>
+          </footer>
+        </main>
+      </div>
+    </div>
+    <script src="https://code.iconify.design/iconify-icon/3.0.0/iconify-icon.min.js"></script>
+    <script>
+      function toggleSidebar() {
+        const sidebar = document.querySelector('.sidebar-left');
+        const overlay = document.querySelector('.sidebar-overlay');
+        sidebar.classList.toggle('open');
+        overlay.classList.toggle('active');
+      }
+    </script>
+  </body>
+</html>
