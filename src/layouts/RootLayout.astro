@@ -1,7 +1,7 @@
 ---
-import '../styles/global.css'
+import "../styles/global.css";
 
-const { title = 'BackArch' } = Astro.props;
+const { title = "BackArch" } = Astro.props;
 ---
 
 <!doctype html>
@@ -13,10 +13,7 @@ const { title = 'BackArch' } = Astro.props;
     <title>{title}</title>
     <meta name="description" content="add before" />
 
-    <meta
-      name="keywords"
-      content="arch"
-    />
+    <meta name="keywords" content="arch" />
     <meta name="author" content="Johan Amed" />
 
     <link rel="icon" href="/favicon-16x16.png" sizes="16x16" type="image/png" />
@@ -29,8 +26,7 @@ const { title = 'BackArch' } = Astro.props;
       type="image/png"
     />
   </head>
-
-  <body class="font-rubik bg-slate-900 text-white min-h-screen">
+  <body>
     <slot />
   </body>
 </html>
