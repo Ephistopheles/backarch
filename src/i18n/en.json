@@ -1,0 +1,55 @@
+{
+  "header": {
+    "stack": "Stack",
+    "version": "Version",
+    "architecture": "Architecture",
+    "generate": "Generate"
+  },
+  "sidebar": {
+    "components": "Components",
+    "helpText": "Drag components onto the canvas"
+  },
+  "inspector": {
+    "title": "Inspector",
+    "name": "Name",
+    "id": "ID",
+    "description": "Description",
+    "method": "Method",
+    "path": "Path",
+    "engine": "Engine",
+    "editingComingSoon": "Editing capabilities coming soon...",
+    "selectNode": "Select a node to\nview its properties"
+  },
+  "validation": {
+    "title": "Validation & Feedback",
+    "issue": "Issue",
+    "issues": "Issues",
+    "found": "Found",
+    "error": "error",
+    "warning": "warning",
+    "info": "info"
+  },
+  "componentTypes": {
+    "controller": "Controller",
+    "service": "Service",
+    "repository": "Repository",
+    "endpoint": "Endpoint",
+    "entity": "Entity",
+    "model": "Model",
+    "database": "Database",
+    "external_service": "External Service",
+    "queue": "Queue"
+  },
+  "validationMessages": {
+    "service_must_connect_repository": "Services should be connected to at least one repository.",
+    "endpoint_missing_method": "Endpoint is missing a method definition.",
+    "endpoint_consider_caching": "Consider adding caching for frequently accessed endpoints.",
+    "controller_should_connect_service": "Controllers should be connected to at least one service.",
+    "repository_should_connect_database": "Repositories should be connected to a database.",
+    "service_circular_dependency": "Circular dependency detected in service layer.",
+    "endpoint_duplicate_path": "Duplicate endpoint path detected.",
+    "database_missing_connection": "Database connection is not configured.",
+    "queue_no_consumer": "Queue has no consumer defined.",
+    "external_service_no_endpoint": "External service has no endpoints defined."
+  }
+}

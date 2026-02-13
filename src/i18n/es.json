@@ -1,0 +1,55 @@
+{
+  "header": {
+    "stack": "Stack",
+    "version": "Versión",
+    "architecture": "Arquitectura",
+    "generate": "Generar"
+  },
+  "sidebar": {
+    "components": "Componentes",
+    "helpText": "Arrastra componentes al canvas"
+  },
+  "inspector": {
+    "title": "Inspector",
+    "name": "Nombre",
+    "id": "ID",
+    "description": "Descripción",
+    "method": "Método",
+    "path": "Ruta",
+    "engine": "Motor",
+    "editingComingSoon": "Funcionalidades de edición próximamente...",
+    "selectNode": "Selecciona un nodo para\nver sus propiedades"
+  },
+  "validation": {
+    "title": "Validación y Retroalimentación",
+    "issue": "Problema",
+    "issues": "Problemas",
+    "found": "Encontrado",
+    "error": "error",
+    "warning": "advertencia",
+    "info": "información"
+  },
+  "componentTypes": {
+    "controller": "Controlador",
+    "service": "Servicio",
+    "repository": "Repositorio",
+    "endpoint": "Endpoint",
+    "entity": "Entidad",
+    "model": "Modelo",
+    "database": "Base de Datos",
+    "external_service": "Servicio Externo",
+    "queue": "Cola"
+  },
+  "validationMessages": {
+    "service_must_connect_repository": "Los servicios deben estar conectados a al menos un repositorio.",
+    "endpoint_missing_method": "El endpoint no tiene un método definido.",
+    "endpoint_consider_caching": "Considera agregar caché para endpoints de acceso frecuente.",
+    "controller_should_connect_service": "Los controladores deben estar conectados a al menos un servicio.",
+    "repository_should_connect_database": "Los repositorios deben estar conectados a una base de datos.",
+    "service_circular_dependency": "Dependencia circular detectada en la capa de servicios.",
+    "endpoint_duplicate_path": "Ruta de endpoint duplicada detectada.",
+    "database_missing_connection": "La conexión a la base de datos no está configurada.",
+    "queue_no_consumer": "La cola no tiene un consumidor definido.",
+    "external_service_no_endpoint": "El servicio externo no tiene endpoints definidos."
+  }
+}

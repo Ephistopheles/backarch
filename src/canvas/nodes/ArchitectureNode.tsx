@@ -5,7 +5,7 @@
 import { memo } from 'react';
 import { Handle, Position, type NodeProps } from '@xyflow/react';
 import type { ArchNodeData } from '../../core/graph/graph.types';
-import { COMPONENT_BLOCKS } from '../../types';
+import { COMPONENT_BLOCKS, getComponentLabel } from '../../types';
 
 /** Base architecture node component */
 export const ArchitectureNode = memo(({ data, selected }: NodeProps) => {
@@ -32,7 +32,7 @@ export const ArchitectureNode = memo(({ data, selected }: NodeProps) => {
         <div
           className={`w-5 h-5 rounded flex items-center justify-center ${block?.color.bg}`}
         >
-          <img src={block?.icon} alt={block?.label} className="w-3.5 h-3.5" />
+          <img src={block?.icon} alt={block ? getComponentLabel(block.type) : ''} className="w-3.5 h-3.5" />
         </div>
         <span className="font-semibold text-sm text-slate-900 truncate">
           {nodeData.name}

@@ -8,12 +8,16 @@ import type { ArchGraph, ArchNode, ArchEdge, NodeType, Position } from '../core/
 import type { ValidationResult } from '../core/rules';
 import { createEmptyGraph, createNode, addNode, removeNode, addEdge, removeEdge, updateNodePosition } from '../core/graph/graph';
 import { STACKS, ARCHITECTURES } from '../core/stacks';
+import { initI18n, setLanguage as setI18nLanguage, type Language } from '../i18n';
 
 interface AppState {
   // Configuration
   selectedStack: string;
   selectedVersion: string;
   selectedArchitecture: string;
+  
+  // i18n
+  language: Language;
   
   // Graph state
   graph: ArchGraph;
@@ -26,6 +30,9 @@ interface AppState {
   setStack: (stackId: string) => void;
   setVersion: (version: string) => void;
   setArchitecture: (archId: string) => void;
+  
+  // Actions - i18n
+  setLanguage: (lang: Language) => void;
   
   // Actions - Graph manipulation
   addNode: (type: NodeType, position?: Position) => void;
@@ -52,6 +59,7 @@ export const useAppStore = create<AppState>((set) => ({
   selectedStack: defaultStack.id,
   selectedVersion: defaultStack.versions[0],
   selectedArchitecture: defaultArchitecture.id,
+  language: initI18n(),
   graph: createEmptyGraph(),
   selectedNodeId: null,
   validations: [],
@@ -70,6 +78,12 @@ export const useAppStore = create<AppState>((set) => ({
   setVersion: (version) => set({ selectedVersion: version }),
 
   setArchitecture: (archId) => set({ selectedArchitecture: archId }),
+
+  // i18n actions
+  setLanguage: (lang) => {
+    setI18nLanguage(lang);
+    set({ language: lang });
+  },
 
   // Graph manipulation actions
   addNode: (type, position = { x: 200, y: 200 }) => {

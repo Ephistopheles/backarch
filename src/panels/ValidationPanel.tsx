@@ -5,6 +5,7 @@
 
 import { useAppStore } from '../store/app.store';
 import type { ValidationSeverity } from '../core/rules';
+import { t } from '../i18n';
 import Search from '../assets/icons/search.svg';
 import Error from '../assets/icons/error.svg';
 import Warning from '../assets/icons/warning.svg';
@@ -41,23 +42,25 @@ function SeverityBadge({ severity }: { severity: ValidationSeverity }) {
 
 export function ValidationPanel() {
   const validations = useAppStore((s) => s.validations);
+  // Force re-render on language change
+  useAppStore((s) => s.language);
 
   // Placeholder validations for demonstration
   const placeholderValidations = [
     {
       id: '1',
       severity: 'warning' as ValidationSeverity,
-      message: 'Services should be connected to at least one repository.',
+      code: 'service_must_connect_repository',
     },
     {
       id: '2',
       severity: 'info' as ValidationSeverity,
-      message: 'Consider adding caching for frequently accessed endpoints.',
+      code: 'endpoint_consider_caching',
     },
     {
       id: '3',
       severity: 'error' as ValidationSeverity,
-      message: 'Endpoint "Get User" is missing a method definition.',
+      code: 'endpoint_missing_method',
     }
   ];
 
@@ -70,10 +73,10 @@ export function ValidationPanel() {
       <div className="px-5 py-3 border-b border-slate-200 flex items-center gap-3">
         <img src={Search} alt="Search" className="w-5 h-5 text-slate-500" />
         <h2 className="text-sm font-semibold text-slate-700">
-          Validation & Feedback
+          {t("validation.title")}
         </h2>
         <div className="ml-auto bg-slate-100 px-2.5 py-0.5 rounded-full text-xs font-medium text-slate-600">
-          {issueCount} {issueCount === 1 ? 'Issue' : 'Issues'} Found
+          {issueCount} {issueCount === 1 ? t("validation.issue") : t("validation.issues")} {t("validation.found")}
         </div>
       </div>
 
@@ -91,7 +94,7 @@ export function ValidationPanel() {
           >
             <SeverityIcon severity={item.severity} />
             <span className="flex-1 text-sm text-slate-700">
-              {item.message}
+              {t(`validationMessages.${item.code}` as never)}
             </span>
             <SeverityBadge severity={item.severity} />
           </div>

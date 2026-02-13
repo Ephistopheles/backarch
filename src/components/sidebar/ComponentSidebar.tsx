@@ -4,17 +4,19 @@
  */
 
 import { COMPONENT_BLOCKS } from '../../types';
+import { t } from '../../i18n';
+import { useAppStore } from '../../store/app.store';
 import type { NodeType } from '../../core/graph/graph.types';
 
 interface ComponentItemProps {
   type: NodeType;
-  label: string;
+  labelKey: string;
   icon: string;
   bgColor: string;
   textColor: string;
 }
 
-function ComponentItem({ type, label, icon, bgColor }: ComponentItemProps) {
+function ComponentItem({ type, labelKey, icon, bgColor }: ComponentItemProps) {
   const onDragStart = (event: React.DragEvent) => {
     event.dataTransfer.setData('application/backarch-node', type);
     event.dataTransfer.effectAllowed = 'move';
@@ -35,20 +37,23 @@ function ComponentItem({ type, label, icon, bgColor }: ComponentItemProps) {
       <div
         className={`w-6 h-6 rounded flex items-center justify-center ${bgColor}`}
       >
-        <img src={icon} alt={label} className="w-4 h-4" />
+        <img src={icon} alt={t(labelKey as never)} className="w-4 h-4" />
       </div>
-      <span className="text-sm font-medium text-slate-700">{label}</span>
+      <span className="text-sm font-medium text-slate-700">{t(labelKey as never)}</span>
     </div>
   );
 }
 
 export function ComponentSidebar() {
+  // Force re-render on language change
+  useAppStore((s) => s.language);
+
   return (
     <aside className="w-60 bg-slate-50 border-r border-slate-200 flex flex-col">
       {/* Header */}
       <div className="px-4 py-3 border-b border-slate-200">
         <h2 className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-          Components
+          {t("sidebar.components")}
         </h2>
       </div>
 
@@ -58,7 +63,7 @@ export function ComponentSidebar() {
           <ComponentItem
             key={block.type}
             type={block.type}
-            label={block.label}
+            labelKey={block.labelKey}
             icon={block.icon}
             bgColor={block.color.bg}
             textColor={block.color.text}
@@ -69,7 +74,7 @@ export function ComponentSidebar() {
       {/* Help text */}
       <div className="p-3 border-t border-slate-200">
         <p className="text-xs text-slate-400 text-center">
-          Drag components onto the canvas
+          {t("sidebar.helpText")}
         </p>
       </div>
     </aside>

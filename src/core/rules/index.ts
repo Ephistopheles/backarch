@@ -8,11 +8,11 @@ import type { ArchGraph } from '../graph/graph.types';
 /** Validation severity levels */
 export type ValidationSeverity = 'error' | 'warning' | 'info';
 
-/** A validation result */
+/** A validation result with stable code (language-agnostic) */
 export interface ValidationResult {
   id: string;
   severity: ValidationSeverity;
-  message: string;
+  code: string; // Stable code like "service_must_connect_repository" (use underscores, not dots)
   nodeId?: string;
 }
 
