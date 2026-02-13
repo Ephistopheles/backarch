@@ -5,16 +5,20 @@
 
 import { useAppStore } from '../store/app.store';
 import type { ValidationSeverity } from '../core/rules';
+import Search from '../assets/icons/search.svg';
+import Error from '../assets/icons/error.svg';
+import Warning from '../assets/icons/warning.svg';
+import Info from '../assets/icons/info.svg';
 
 /** Icon component for validation severity */
 function SeverityIcon({ severity }: { severity: ValidationSeverity }) {
   switch (severity) {
     case 'error':
-      return <span className="text-red-500">⛔</span>;
+      return <img src={Error} alt="Error" className="w-5 h-5" />;
     case 'warning':
-      return <span className="text-amber-500">⚠️</span>;
+      return <img src={Warning} alt="Warning" className="w-5 h-5" />;
     case 'info':
-      return <span className="text-sky-500">ℹ️</span>;
+      return <img src={Info} alt="Info" className="w-5 h-5" />;
   }
 }
 
@@ -52,9 +56,9 @@ export function ValidationPanel() {
     },
     {
       id: '3',
-      severity: 'info' as ValidationSeverity,
-      message: 'Architecture validation is ready.',
-    },
+      severity: 'error' as ValidationSeverity,
+      message: 'Endpoint "Get User" is missing a method definition.',
+    }
   ];
 
   const items = validations.length > 0 ? validations : placeholderValidations;
@@ -64,7 +68,7 @@ export function ValidationPanel() {
     <footer className="h-45 bg-white border-t border-slate-200 flex flex-col">
       {/* Header */}
       <div className="px-5 py-3 border-b border-slate-200 flex items-center gap-3">
-        <span className="text-slate-500">🔍</span>
+        <img src={Search} alt="Search" className="w-5 h-5 text-slate-500" />
         <h2 className="text-sm font-semibold text-slate-700">
           Validation & Feedback
         </h2>

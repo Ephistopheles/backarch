@@ -30,9 +30,9 @@ export const ArchitectureNode = memo(({ data, selected }: NodeProps) => {
       {/* Node header */}
       <div className="flex items-center gap-2 mb-2">
         <div
-          className={`w-5 h-5 rounded flex items-center justify-center text-xs ${block?.color.bg} ${block?.color.text}`}
+          className={`w-5 h-5 rounded flex items-center justify-center ${block?.color.bg}`}
         >
-          {block?.icon}
+          <img src={block?.icon} alt={block?.label} className="w-3.5 h-3.5" />
         </div>
         <span className="font-semibold text-sm text-slate-900 truncate">
           {nodeData.name}

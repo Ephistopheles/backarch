@@ -62,7 +62,6 @@ export function Header() {
       {/* Right: Actions */}
       <div className="flex items-center gap-3">
         <Button variant="primary" disabled>
-          <span>⚡</span>
           Generate
         </Button>
       </div>

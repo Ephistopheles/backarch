@@ -14,7 +14,7 @@ interface ComponentItemProps {
   textColor: string;
 }
 
-function ComponentItem({ type, label, icon, bgColor, textColor }: ComponentItemProps) {
+function ComponentItem({ type, label, icon, bgColor }: ComponentItemProps) {
   const onDragStart = (event: React.DragEvent) => {
     event.dataTransfer.setData('application/backarch-node', type);
     event.dataTransfer.effectAllowed = 'move';
@@ -33,9 +33,9 @@ function ComponentItem({ type, label, icon, bgColor, textColor }: ComponentItemP
       "
     >
       <div
-        className={`w-6 h-6 rounded flex items-center justify-center text-sm ${bgColor} ${textColor}`}
+        className={`w-6 h-6 rounded flex items-center justify-center ${bgColor}`}
       >
-        {icon}
+        <img src={icon} alt={label} className="w-4 h-4" />
       </div>
       <span className="text-sm font-medium text-slate-700">{label}</span>
     </div>
@@ -44,7 +44,7 @@ function ComponentItem({ type, label, icon, bgColor, textColor }: ComponentItemP
 
 export function ComponentSidebar() {
   return (
-    <aside className="w-[240px] bg-slate-50 border-r border-slate-200 flex flex-col">
+    <aside className="w-60 bg-slate-50 border-r border-slate-200 flex flex-col">
       {/* Header */}
       <div className="px-4 py-3 border-b border-slate-200">
         <h2 className="text-xs font-semibold uppercase tracking-wide text-slate-500">

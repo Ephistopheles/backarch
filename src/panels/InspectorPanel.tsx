@@ -19,7 +19,7 @@ export function InspectorPanel() {
     : null;
 
   return (
-    <aside className="w-[280px] bg-white border-l border-slate-200 flex flex-col">
+    <aside className="w-70 bg-white border-l border-slate-200 flex flex-col">
       {/* Header */}
       <div className="px-4 py-3 border-b border-slate-200">
         <h2 className="text-xs font-semibold uppercase tracking-wide text-slate-500">
@@ -34,9 +34,9 @@ export function InspectorPanel() {
             {/* Node type badge */}
             <div className="flex items-center gap-2">
               <div
-                className={`w-6 h-6 rounded flex items-center justify-center text-sm ${block?.color.bg} ${block?.color.text}`}
+                className={`w-6 h-6 rounded flex items-center justify-center ${block?.color.bg}`}
               >
-                {block?.icon}
+                <img src={block?.icon} alt={block?.label} className="w-4 h-4" />
               </div>
               <span className="text-sm font-medium text-slate-700">
                 {block?.label}

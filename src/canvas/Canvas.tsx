@@ -135,6 +135,7 @@ export function Canvas() {
         snapToGrid
         snapGrid={[20, 20]}
         className="bg-slate-50"
+        proOptions={{ hideAttribution: true }}
       >
         <Background
           variant={BackgroundVariant.Dots}
