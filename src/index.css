@@ -23,6 +23,7 @@
 /* Base styles */
 * {
   box-sizing: border-box;
+  user-select: none;
 }
 
 html,
