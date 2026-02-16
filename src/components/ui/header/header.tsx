@@ -2,6 +2,8 @@ import { Layout, Row, Col, Image, Select, Button, Space, Divider } from 'antd';
 import Language from '@/assets/icons/language.svg';
 import Play from '@/assets/icons/play.svg';
 import BackArchLogo from '/logo/backarch-logo.svg';
+import { useAppStore } from '@/store/app.store';
+import { t, type Language as LanguageType } from '@/i18n/index.i18n';
 
 const { Header: AntHeader } = Layout;
 
@@ -23,6 +25,14 @@ const architectureOptions = [
 ];
 
 const Header = () => {
+  const language = useAppStore((s) => s.language);
+  const setLanguage = useAppStore((s) => s.setLanguage);
+
+  const toggleLanguage = () => {
+    const newLang: LanguageType = language === 'en' ? 'es' : 'en';
+    setLanguage(newLang);
+  };
+
   return (
     <AntHeader style={{ borderBottom: '1px solid #e8e8e8' }}>
       <Row justify='space-between' align='middle'>
@@ -41,10 +51,10 @@ const Header = () => {
         <Col>
           <Space size='middle'>
             <Space size='small' align='center'>
-              <span>Stack:</span>
+              <span>{t('header.stack.label')}</span>
               <Select
                 style={{ minWidth: 120 }}
-                placeholder='Select stack'
+                placeholder={t('header.stack.placeholder')}
                 options={stackOptions}
               />
             </Space>
@@ -54,10 +64,10 @@ const Header = () => {
             />
 
             <Space size='small' align='center'>
-              <span>Version:</span>
+              <span>{t('header.version.label')}</span>
               <Select
                 style={{ minWidth: 100 }}
-                placeholder='Select version'
+                placeholder={t('header.version.placeholder')}
                 options={versionOptions}
               />
             </Space>
@@ -68,10 +78,10 @@ const Header = () => {
             />
 
             <Space size='small' align='center'>
-              <span>Architecture:</span>
+              <span>{t('header.architecture.label')}</span>
               <Select
                 style={{ minWidth: 150 }}
-                placeholder='Select architecture'
+                placeholder={t('header.architecture.placeholder')}
                 options={architectureOptions}
               />
             </Space>
@@ -81,8 +91,8 @@ const Header = () => {
         {/* Right: Actions */}
         <Col>
           <Space size='middle'>
-            <Button>
-              {true ? 'EN' : 'ES'}
+            <Button onClick={toggleLanguage}>
+              {language.toUpperCase()}
               <img
                 src={Language}
                 alt='Language'
@@ -92,7 +102,7 @@ const Header = () => {
               />
             </Button>
             <Button type='primary' disabled>
-              GENERATE
+              {t('header.generate')}
               <img
                 src={Play}
                 alt='Generate'

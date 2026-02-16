@@ -2,7 +2,9 @@ import { Layout, Typography, Space, Card, Image } from 'antd';
 import EndPoint from '@/assets/icons/endpoint.svg';
 import Service from '@/assets/icons/service.svg';
 import Repository from '@/assets/icons/repository.svg';
-import Database from '@/assets/icons/database.svg'; 
+import Database from '@/assets/icons/database.svg';
+import { useAppStore } from '@/store/app.store';
+import { t } from '@/i18n/index.i18n';
 
 const { Sider: LeftSider } = Layout;
 const { Title, Text } = Typography;
@@ -48,30 +50,32 @@ const ComponentItem = ({ icon, label, bgColor }: ComponentItemProps) => {
   );
 };
 
-const components = [
-  {
-    icon: EndPoint,
-    label: 'Endpoint',
-    bgColor: '#c6e8feff',
-  },
-  {
-    icon: Service,
-    label: 'Service',
-    bgColor: '#cbfed8ff',
-  },
-  {
-    icon: Repository,
-    label: 'Repository',
-    bgColor: '#d7afffff',
-  },
-  {
-    icon: Database,
-    label: 'Database',
-    bgColor: '#ff9c9cff',
-  },
-];
-
 const LeftSidebar = () => {
+  useAppStore((s) => s.language);
+
+  const components = [
+    {
+      icon: EndPoint,
+      label: t('leftsidebar.componentTypes.endpoint'),
+      bgColor: '#c6e8feff',
+    },
+    {
+      icon: Service,
+      label: t('leftsidebar.componentTypes.service'),
+      bgColor: '#cbfed8ff',
+    },
+    {
+      icon: Repository,
+      label: t('leftsidebar.componentTypes.repository'),
+      bgColor: '#d7afffff',
+    },
+    {
+      icon: Database,
+      label: t('leftsidebar.componentTypes.database'),
+      bgColor: '#ff9c9cff',
+    },
+  ];
+
   return (
     <LeftSider
       width={240}
@@ -100,14 +104,21 @@ const LeftSidebar = () => {
             letterSpacing: '0.5px',
           }}
         >
-          Components
+          {t('leftsidebar.title')}
         </Title>
       </div>
       <div>
         {components.map((component, index) => (
           <ComponentItem
             key={index}
-            icon={<Image src={component.icon} alt={component.label} preview={false} draggable={false} />}
+            icon={
+              <Image
+                src={component.icon}
+                alt={component.label}
+                preview={false}
+                draggable={false}
+              />
+            }
             label={component.label}
             bgColor={component.bgColor}
           />
@@ -124,7 +135,7 @@ const LeftSidebar = () => {
           type='secondary'
           style={{ fontSize: '12px', textAlign: 'center', display: 'block' }}
         >
-          Drag components to the canvas to design your backend architecture.
+          {t('leftsidebar.helpText')}
         </Text>
       </div>
     </LeftSider>

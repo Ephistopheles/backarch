@@ -1,0 +1,36 @@
+{
+  "header": {
+    "stack": {
+      "label": "Stack",
+      "placeholder": "Select stack"
+    },
+    "version": {
+      "label": "Version",
+      "placeholder": "Select version"
+    },
+    "architecture": {
+      "label": "Architecture",
+      "placeholder": "Select architecture"
+    },
+    "generate": "Generate"
+  },
+  "leftsidebar": {
+    "title": "Components",
+    "helpText": "Drag components to the canvas to design your backend architecture",
+    "componentTypes": {
+      "endpoint": "Endpoint",
+      "service": "Service",
+      "repository": "Repository",
+      "database": "Database"
+    }
+  },
+  "rightsidebar": {
+    "title": "Inspector",
+    "helpText": "Select a component on the canvas to view and edit its properties"
+  },
+  "footer": {
+    "title": "Validation & Feedback",
+    "helpText": "Issues found in your architecture will be displayed here",
+    "issuesFound": "Issues Found"
+  }
+}

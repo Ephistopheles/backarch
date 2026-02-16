@@ -1,0 +1,36 @@
+{
+  "header": {
+    "stack": {
+      "label": "Stack",
+      "placeholder": "Selecciona stack"
+    },
+    "version": {
+      "label": "Versión",
+      "placeholder": "Selecciona versión"
+    },
+    "architecture": {
+      "label": "Arquitectura",
+      "placeholder": "Selecciona arquitectura"
+    },
+    "generate": "Generar"
+  },
+  "leftsidebar": {
+    "title": "Componentes",
+    "helpText": "Arrastra los componentes al lienzo para diseñar tu arquitectura de backend",
+    "componentTypes": {
+      "endpoint": "Punto de acceso",
+      "service": "Servicio",
+      "repository": "Repositorio",
+      "database": "Base de datos"
+    }
+  },
+  "rightsidebar": {
+    "title": "Inspector",
+    "helpText": "Selecciona un componente en el lienzo para ver y editar sus propiedades"
+  },
+  "footer": {
+    "title": "Validación y Retroalimentación",
+    "helpText": "Los problemas encontrados en tu arquitectura se mostrarán aquí",
+    "issuesFound": "Problemas Encontrados"
+  }
+}
