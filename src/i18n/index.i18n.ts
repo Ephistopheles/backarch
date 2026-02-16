@@ -104,13 +104,3 @@ export const t = (
 
   return result;
 };
-
-/**
- * Get all translations for a namespace
- * Useful for getting multiple related translations at once
- */
-export const tNamespace = <K extends keyof Translations>(
-  namespace: K
-): Translations[K] => {
-  return translations[currentLanguage][namespace];
-};
