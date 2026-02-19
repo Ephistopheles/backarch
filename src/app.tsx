@@ -1,9 +1,9 @@
 import { Layout, Typography } from 'antd';
 import { ConfigProvider } from 'antd';
-import Header from '@/components/ui/header/header';
-import LeftSidebar from '@/components/ui/left-sidebar/left-sidebar';
-import RightSidebar from '@/components/ui/right-sidebar/right-sidebar';
-import Footer from '@/components/ui/footer/footer';
+import Header from '@/components/ux/header/header';
+import LeftSidebar from '@/components/ux/left-sidebar/left-sidebar';
+import RightSidebar from '@/components/ux/right-sidebar/right-sidebar';
+import Footer from '@/components/ux/footer/footer';
 import GlobalTheme from './config/theme/global/global-theme';
 import 'antd/dist/reset.css';
 

@@ -1,28 +1,13 @@
-import { Layout, Row, Col, Image, Select, Button, Space, Divider } from 'antd';
+import { Layout, Row, Col, Image, Button, Space, Divider } from 'antd';
 import Language from '@/assets/icons/language.svg';
 import Play from '@/assets/icons/play.svg';
 import BackArchLogo from '/logo/backarch-logo.svg';
 import { useAppStore } from '@/store/app.store';
 import { t, type Language as LanguageType } from '@/i18n/index.i18n';
+import SelectBA from '@/components/ui/select';
+import { STACKS, VERSIONS, ARCHITECTURES } from '@/core/stack/stack';
 
 const { Header: AntHeader } = Layout;
-
-const stackOptions = [
-  { value: 'springboot', label: 'Spring Boot' },
-  { value: 'nodejs', label: 'Node.js' },
-  { value: 'django', label: 'Django' },
-];
-
-const versionOptions = [
-  { value: '3.0', label: '3.0' },
-  { value: '2.7', label: '2.7' },
-];
-
-const architectureOptions = [
-  { value: 'layered', label: 'Layered' },
-  { value: 'hexagonal', label: 'Hexagonal' },
-  { value: 'clean', label: 'Clean Architecture' },
-];
 
 const Header = () => {
   const language = useAppStore((s) => s.language);
@@ -36,7 +21,6 @@ const Header = () => {
   return (
     <AntHeader style={{ borderBottom: '1px solid #e8e8e8' }}>
       <Row justify='space-between' align='middle'>
-        {/* Logo */}
         <Col>
           <Image
             src={BackArchLogo}
@@ -46,49 +30,54 @@ const Header = () => {
             height={50}
           />
         </Col>
-
-        {/* Center: Configuration selectors */}
         <Col>
           <Space size='middle'>
             <Space size='small' align='center'>
               <span>{t('header.stack.label')}</span>
-              <Select
-                style={{ minWidth: 120 }}
+              <SelectBA
+                options={STACKS}
                 placeholder={t('header.stack.placeholder')}
-                options={stackOptions}
+                getValue={(s) => s.id}
+                getLabel={(s) => s.name}
+                getDescription={(s) => s.description}
+                getDocumentationUrl={(s) => s.documentationUrl}
+                showPopover
               />
             </Space>
             <Divider
               orientation='vertical'
               style={{ height: '24px', margin: '0 8px' }}
             />
-
             <Space size='small' align='center'>
               <span>{t('header.version.label')}</span>
-              <Select
-                style={{ minWidth: 100 }}
+              <SelectBA
+                options={VERSIONS}
                 placeholder={t('header.version.placeholder')}
-                options={versionOptions}
+                getValue={(v) => v.id}
+                getLabel={(v) => v.version}
+                getDescription={(v) => v.description}
+                getDocumentationUrl={(v) => v.documentationUrl}
+                showPopover
               />
             </Space>
-
             <Divider
               orientation='vertical'
               style={{ height: '24px', margin: '0 8px' }}
             />
-
             <Space size='small' align='center'>
               <span>{t('header.architecture.label')}</span>
-              <Select
-                style={{ minWidth: 150 }}
+              <SelectBA
+                options={ARCHITECTURES}
                 placeholder={t('header.architecture.placeholder')}
-                options={architectureOptions}
+                getValue={(a) => a.id}
+                getLabel={(a) => a.name}
+                getDescription={(a) => a.description}
+                getDocumentationUrl={(a) => a.documentationUrl}
+                showPopover
               />
             </Space>
           </Space>
         </Col>
-
-        {/* Right: Actions */}
         <Col>
           <Space size='middle'>
             <Button onClick={toggleLanguage}>
