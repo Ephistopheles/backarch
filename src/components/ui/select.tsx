@@ -5,23 +5,27 @@ const { Paragraph, Link } = Typography;
 interface SelectBAProps<T> {
   options: T[];
   placeholder?: string;
-  onChange?: (value: string) => void;
+  value?: string | null;
+  onChange?: (value: string | null) => void;
   getValue: (option: T) => string;
   getLabel: (option: T) => string;
   getDescription?: (option: T) => string | undefined;
   getDocumentationUrl?: (option: T) => string | undefined;
   showPopover?: boolean;
+  disabled?: boolean;
 }
 
 const SelectBA = <T,>({
   options,
   placeholder,
+  value,
   onChange,
   getValue,
   getLabel,
   getDescription,
   getDocumentationUrl,
   showPopover = false,
+  disabled = false,
 }: SelectBAProps<T>) => {
   const renderPopoverContent = (opt: T) => {
     const description = getDescription?.(opt);
@@ -59,8 +63,11 @@ const SelectBA = <T,>({
   return (
     <Select
       placeholder={placeholder}
-      onChange={onChange}
+      value={value}
+      onChange={(val) => onChange?.(val ?? null)}
       options={mappedOptions}
+      disabled={disabled}
+      allowClear
     />
   );
 };

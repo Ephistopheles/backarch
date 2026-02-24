@@ -5,13 +5,23 @@ import BackArchLogo from '/logo/backarch-logo.svg';
 import { useAppStore } from '@/store/app.store';
 import { t, type Language as LanguageType } from '@/i18n/index.i18n';
 import SelectBA from '@/components/ui/select';
-import { STACKS, VERSIONS, ARCHITECTURES } from '@/core/stack/stack';
+import {
+  STACKS,
+  getVersionsByStackId,
+  ARCHITECTURES,
+} from '@/core/stack/stack';
 
 const { Header: AntHeader } = Layout;
 
 const Header = () => {
   const language = useAppStore((s) => s.language);
   const setLanguage = useAppStore((s) => s.setLanguage);
+  const selectedStack = useAppStore((s) => s.selectedStack);
+  const selectedVersion = useAppStore((s) => s.selectedVersion);
+  const selectedArchitecture = useAppStore((s) => s.selectedArchitecture);
+  const setStack = useAppStore((s) => s.setStack);
+  const setVersion = useAppStore((s) => s.setVersion);
+  const setArchitecture = useAppStore((s) => s.setArchitecture);
 
   const toggleLanguage = () => {
     const newLang: LanguageType = language === 'en' ? 'es' : 'en';
@@ -37,6 +47,8 @@ const Header = () => {
               <SelectBA
                 options={STACKS}
                 placeholder={t('header.stack.placeholder')}
+                value={selectedStack}
+                onChange={setStack}
                 getValue={(s) => s.id}
                 getLabel={(s) => s.name}
                 getDescription={(s) => s.description}
@@ -51,13 +63,18 @@ const Header = () => {
             <Space size='small' align='center'>
               <span>{t('header.version.label')}</span>
               <SelectBA
-                options={VERSIONS}
+                options={
+                  selectedStack ? getVersionsByStackId(selectedStack) : []
+                }
                 placeholder={t('header.version.placeholder')}
+                value={selectedVersion}
+                onChange={setVersion}
                 getValue={(v) => v.id}
                 getLabel={(v) => v.version}
                 getDescription={(v) => v.description}
                 getDocumentationUrl={(v) => v.documentationUrl}
                 showPopover
+                disabled={!selectedStack}
               />
             </Space>
             <Divider
@@ -69,11 +86,14 @@ const Header = () => {
               <SelectBA
                 options={ARCHITECTURES}
                 placeholder={t('header.architecture.placeholder')}
+                value={selectedArchitecture}
+                onChange={setArchitecture}
                 getValue={(a) => a.id}
                 getLabel={(a) => a.name}
                 getDescription={(a) => a.description}
                 getDocumentationUrl={(a) => a.documentationUrl}
                 showPopover
+                disabled={!selectedStack}
               />
             </Space>
           </Space>

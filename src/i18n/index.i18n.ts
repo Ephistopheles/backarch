@@ -12,24 +12,24 @@ type Translations = typeof enTranslations;
 type DeepKeys<T, Depth extends number = 3> = Depth extends 0
   ? never
   : T extends object
-  ? {
-      [K in keyof T]: K extends string
-        ? T[K] extends object
-          ? T[K] extends Array<unknown>
-            ? K
-            : `${K}` | `${K}.${DeepKeys<T[K], DecreaseDepth<Depth>>}`
-          : K
-        : never;
-    }[keyof T]
-  : never;
+    ? {
+        [K in keyof T]: K extends string
+          ? T[K] extends object
+            ? T[K] extends Array<unknown>
+              ? K
+              : `${K}` | `${K}.${DeepKeys<T[K], DecreaseDepth<Depth>>}`
+            : K
+          : never;
+      }[keyof T]
+    : never;
 
 type DecreaseDepth<D extends number> = D extends 3
   ? 2
   : D extends 2
-  ? 1
-  : D extends 1
-  ? 0
-  : never;
+    ? 1
+    : D extends 1
+      ? 0
+      : never;
 
 export type TranslationKey = DeepKeys<Translations>;
 
@@ -76,7 +76,7 @@ export function getI18nLanguage(): Language {
  */
 export const t = (
   key: TranslationKey,
-  params?: Record<string, string | number>
+  params?: Record<string, string | number>,
 ): string => {
   const keys = key.split('.');
   let value: unknown = translations[currentLanguage];
@@ -97,7 +97,7 @@ export const t = (
     Object.entries(params).forEach(([paramKey, paramValue]) => {
       result = result.replace(
         new RegExp(`{{${paramKey}}}`, 'g'),
-        String(paramValue)
+        String(paramValue),
       );
     });
   }
