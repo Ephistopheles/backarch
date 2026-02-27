@@ -2,7 +2,7 @@ import { Select, Popover, Typography, Space } from 'antd';
 
 const { Paragraph, Link } = Typography;
 
-interface SelectBAProps<T> {
+interface BASelectProps<T> {
   options: T[];
   placeholder?: string;
   value?: string | null;
@@ -15,7 +15,7 @@ interface SelectBAProps<T> {
   disabled?: boolean;
 }
 
-const SelectBA = <T,>({
+const BASelect = <T,>({
   options,
   placeholder,
   value,
@@ -26,7 +26,7 @@ const SelectBA = <T,>({
   getDocumentationUrl,
   showPopover = false,
   disabled = false,
-}: SelectBAProps<T>) => {
+}: BASelectProps<T>) => {
   const renderPopoverContent = (opt: T) => {
     const description = getDescription?.(opt);
     const documentationUrl = getDocumentationUrl?.(opt);
@@ -72,4 +72,4 @@ const SelectBA = <T,>({
   );
 };
 
-export default SelectBA;
+export default BASelect;

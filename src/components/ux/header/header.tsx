@@ -4,12 +4,12 @@ import Play from '@/assets/icons/play.svg';
 import BackArchLogo from '/logo/backarch-logo.svg';
 import { useAppStore } from '@/store/app.store';
 import { t, type Language as LanguageType } from '@/i18n/index.i18n';
-import SelectBA from '@/components/ui/select';
+import BASelect from '@/components/ui/select';
 import {
   STACKS,
   getVersionsByStackId,
   ARCHITECTURES,
-} from '@/core/stack/stack';
+} from '@/core/stack/index.stack';
 
 const { Header: AntHeader } = Layout;
 
@@ -44,7 +44,7 @@ const Header = () => {
           <Space size='middle'>
             <Space size='small' align='center'>
               <span>{t('header.stack.label')}</span>
-              <SelectBA
+              <BASelect
                 options={STACKS}
                 placeholder={t('header.stack.placeholder')}
                 value={selectedStack}
@@ -62,7 +62,7 @@ const Header = () => {
             />
             <Space size='small' align='center'>
               <span>{t('header.version.label')}</span>
-              <SelectBA
+              <BASelect
                 options={
                   selectedStack ? getVersionsByStackId(selectedStack) : []
                 }
@@ -83,7 +83,7 @@ const Header = () => {
             />
             <Space size='small' align='center'>
               <span>{t('header.architecture.label')}</span>
-              <SelectBA
+              <BASelect
                 options={ARCHITECTURES}
                 placeholder={t('header.architecture.placeholder')}
                 value={selectedArchitecture}

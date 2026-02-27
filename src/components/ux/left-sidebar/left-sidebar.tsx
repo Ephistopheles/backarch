@@ -1,21 +1,25 @@
 import { Layout, Typography, Space, Card, Image } from 'antd';
-import EndPoint from '@/assets/icons/endpoint.svg';
-import Service from '@/assets/icons/service.svg';
-import Repository from '@/assets/icons/repository.svg';
-import Database from '@/assets/icons/database.svg';
 import { useAppStore } from '@/store/app.store';
-import { t } from '@/i18n/index.i18n';
+import { t, type TranslationKey } from '@/i18n/index.i18n';
+import type { NodeType } from '@/core/engine/types/graph/index.graph';
+import { COMPONENT_BLOCKS } from '@/core/components/index.components';
 
 const { Sider: LeftSider } = Layout;
 const { Title, Text } = Typography;
 
 interface ComponentItemProps {
+  type: NodeType;
+  labelKey: TranslationKey;
   icon: React.ReactNode;
-  label: string;
   bgColor: string;
 }
 
-const ComponentItem = ({ icon, label, bgColor }: ComponentItemProps) => {
+const ComponentItem = ({ type, labelKey, icon, bgColor }: ComponentItemProps) => {
+  const onDragStart = (event: React.DragEvent<HTMLDivElement>) => {
+    event.dataTransfer.setData('application/backarch-node', type);
+    event.dataTransfer.effectAllowed = 'move';
+  };
+
   return (
     <Card
       size='small'
@@ -26,6 +30,7 @@ const ComponentItem = ({ icon, label, bgColor }: ComponentItemProps) => {
         borderRadius: '8px',
       }}
       draggable
+      onDragStart={onDragStart}
     >
       <Space size='middle'>
         <div
@@ -43,7 +48,7 @@ const ComponentItem = ({ icon, label, bgColor }: ComponentItemProps) => {
           {icon}
         </div>
         <Text strong style={{ fontSize: '14px' }}>
-          {label}
+          {t(labelKey)}
         </Text>
       </Space>
     </Card>
@@ -52,29 +57,6 @@ const ComponentItem = ({ icon, label, bgColor }: ComponentItemProps) => {
 
 const LeftSidebar = () => {
   useAppStore((s) => s.language);
-
-  const components = [
-    {
-      icon: EndPoint,
-      label: t('leftsidebar.componentTypes.endpoint'),
-      bgColor: '#c6e8feff',
-    },
-    {
-      icon: Service,
-      label: t('leftsidebar.componentTypes.service'),
-      bgColor: '#cbfed8ff',
-    },
-    {
-      icon: Repository,
-      label: t('leftsidebar.componentTypes.repository'),
-      bgColor: '#d7afffff',
-    },
-    {
-      icon: Database,
-      label: t('leftsidebar.componentTypes.database'),
-      bgColor: '#ff9c9cff',
-    },
-  ];
 
   return (
     <LeftSider
@@ -108,18 +90,19 @@ const LeftSidebar = () => {
         </Title>
       </div>
       <div>
-        {components.map((component, index) => (
+        {COMPONENT_BLOCKS.map((component) => (
           <ComponentItem
-            key={index}
+            key={component.type}
+            type={component.type}
+            labelKey={component.labelKey}
             icon={
               <Image
                 src={component.icon}
-                alt={component.label}
+                alt={component.labelKey}
                 preview={false}
                 draggable={false}
               />
             }
-            label={component.label}
             bgColor={component.bgColor}
           />
         ))}
