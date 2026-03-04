@@ -17,7 +17,7 @@
   "leftsidebar": {
     "title": "Components",
     "helpText": "Drag components to the canvas to design your backend architecture",
-    "selectArchitecture": "Select an architecture to view available components",
+    "selectConfiguration": "Select a configuration in the header to view the available components",
     "componentTypes": {
       "endpoint": "Endpoint",
       "service": "Service",

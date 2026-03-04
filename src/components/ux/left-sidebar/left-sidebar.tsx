@@ -101,7 +101,7 @@ const EmptyCatalog = () => {
       image={Empty.PRESENTED_IMAGE_SIMPLE}
       description={
         <Text type='secondary' style={{ fontSize: '13px' }}>
-          {t('leftsidebar.selectArchitecture')}
+          {t('leftsidebar.selectConfiguration')}
         </Text>
       }
       style={{ marginTop: '60px' }}
