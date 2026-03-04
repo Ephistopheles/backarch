@@ -78,6 +78,7 @@ const ComponentItem = ({
             draggable={false}
             width={20}
             height={20}
+            style={{ display: 'block' }}
           />
         </div>
         <Text strong style={{ fontSize: '14px' }}>

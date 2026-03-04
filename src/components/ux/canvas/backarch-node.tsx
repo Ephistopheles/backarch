@@ -84,6 +84,7 @@ function BackArchNode({ data, selected }: BackArchNodeProps) {
             preview={false}
             width={18}
             height={18}
+            style={{ display: 'block' }}
           />
         </div>
 
