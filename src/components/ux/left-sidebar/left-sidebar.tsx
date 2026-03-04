@@ -10,7 +10,10 @@ import { Layout, Typography, Space, Card, Image, Empty } from 'antd';
 import { useAppStore } from '@/store/app.store';
 import { t, type TranslationKey } from '@/i18n/index.i18n';
 import type { NodeType } from '@/core/engine/types/graph/index.graph';
-import { getCatalogByArchitecture, type CatalogComponent } from '@/core/catalog/index.catalog';
+import {
+  getCatalogByArchitecture,
+  type CatalogComponent,
+} from '@/core/catalog/index.catalog';
 
 const { Sider: LeftSider } = Layout;
 const { Title, Text } = Typography;
@@ -183,7 +186,7 @@ const LeftSidebar = () => {
           type='secondary'
           style={{ fontSize: '12px', textAlign: 'center', display: 'block' }}
         >
-          {hasCatalog ? t('leftsidebar.helpText') : t('leftsidebar.configHelpText')}
+          {hasCatalog ? t('leftsidebar.helpText') : ''}
         </Text>
       </div>
     </LeftSider>

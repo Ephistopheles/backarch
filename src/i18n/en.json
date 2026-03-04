@@ -17,7 +17,6 @@
   "leftsidebar": {
     "title": "Components",
     "helpText": "Drag components to the canvas to design your backend architecture",
-    "configHelpText": "Select a stack, version, and architecture to begin",
     "selectArchitecture": "Select an architecture to view available components",
     "componentTypes": {
       "endpoint": "Endpoint",

@@ -17,7 +17,6 @@
   "leftsidebar": {
     "title": "Componentes",
     "helpText": "Arrastra los componentes al lienzo para diseñar tu arquitectura de backend",
-    "configHelpText": "Selecciona un stack, versión y arquitectura para comenzar",
     "selectArchitecture": "Selecciona una arquitectura para ver los componentes disponibles",
     "componentTypes": {
       "endpoint": "Punto de acceso",
