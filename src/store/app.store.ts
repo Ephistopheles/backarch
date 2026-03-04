@@ -92,9 +92,11 @@ interface AppState {
 
 /**
  * Run validation and return the result
+ * @param graph - The graph to validate
+ * @param architectureId - The selected architecture for context-aware validation
  */
-const runValidation = (graph: BAGraph): ValidationResult => {
-  return validateGraph(graph);
+const runValidation = (graph: BAGraph, architectureId: string | null): ValidationResult => {
+  return validateGraph(graph, architectureId);
 };
 
 /**
@@ -277,7 +279,7 @@ export const useAppStore = create<AppState>((set, get) => ({
 
     const newGraph = engineAddNode(state.graph, newNode);
     const flowNode = createFlowNode(newNode, position);
-    const validationResult = runValidation(newGraph);
+    const validationResult = runValidation(newGraph, state.selectedArchitecture);
 
     set({
       graph: newGraph,
@@ -306,7 +308,7 @@ export const useAppStore = create<AppState>((set, get) => ({
       };
     });
 
-    const validationResult = runValidation(newGraph);
+    const validationResult = runValidation(newGraph, state.selectedArchitecture);
 
     set({
       graph: newGraph,
@@ -325,7 +327,7 @@ export const useAppStore = create<AppState>((set, get) => ({
       (e) => e.source !== nodeId && e.target !== nodeId
     );
 
-    const validationResult = runValidation(newGraph);
+    const validationResult = runValidation(newGraph, state.selectedArchitecture);
 
     set({
       graph: newGraph,
@@ -347,7 +349,7 @@ export const useAppStore = create<AppState>((set, get) => ({
       target: connection.target,
     };
 
-    const newGraph = engineAddEdge(state.graph, newEdge);
+    const newGraph = engineAddEdge(state.graph, newEdge, state.selectedArchitecture);
 
     // If graph didn't change, the connection was invalid
     if (newGraph === state.graph) {
@@ -362,7 +364,7 @@ export const useAppStore = create<AppState>((set, get) => ({
       style: { strokeWidth: 2 },
     };
 
-    const validationResult = runValidation(newGraph);
+    const validationResult = runValidation(newGraph, state.selectedArchitecture);
 
     set({
       graph: newGraph,
@@ -375,7 +377,7 @@ export const useAppStore = create<AppState>((set, get) => ({
     const state = get();
     const newGraph = engineRemoveEdge(state.graph, edgeId);
     const updatedEdges = state.edges.filter((e) => e.id !== edgeId);
-    const validationResult = runValidation(newGraph);
+    const validationResult = runValidation(newGraph, state.selectedArchitecture);
 
     set({
       graph: newGraph,

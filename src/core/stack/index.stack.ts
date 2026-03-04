@@ -48,6 +48,14 @@ export const ARCHITECTURES: Architecture[] = [
     documentationUrl:
       'https://dev.to/yasmine_ddec94f4d4/understanding-the-layered-architecture-pattern-a-comprehensive-guide-1e2j',
   },
+  {
+    id: 'hexagonal',
+    name: 'Hexagonal Architecture',
+    description:
+      'An architectural style that emphasizes separation of concerns and promotes testability by isolating the core logic from external dependencies.',
+    documentationUrl:
+      'https://lo0o0p.medium.com/my-flavour-of-hexagonal-architecture-ef3f0fb2c92c',
+  },
 ];
 
 export const getStackById = (id: string): Stack | undefined => {

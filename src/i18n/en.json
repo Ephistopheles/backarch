@@ -22,7 +22,12 @@
       "endpoint": "Endpoint",
       "service": "Service",
       "repository": "Repository",
-      "database": "Database"
+      "database": "Database",
+      "drivingAdapter": "Driving Adapter",
+      "drivingPort": "Driving Port",
+      "domain": "Domain",
+      "drivenPort": "Driven Port",
+      "drivenAdapter": "Driven Adapter"
     }
   },
   "rightsidebar": {
@@ -68,6 +73,10 @@
     "endpointSkipsService": "Endpoint should not connect directly to Repository. Use a Service layer.",
     "endpointToDatabase": "Endpoint should not connect directly to Database. Follow layered architecture.",
     "serviceSkipsRepository": "Service should not connect directly to Database. Use a Repository layer.",
-    "circularDependency": "Circular dependency detected"
+    "circularDependency": "Circular dependency detected",
+    "requiredOutgoingConnection": "Component must have an outgoing connection",
+    "suggestedOutgoingConnection": "Component should have an outgoing connection",
+    "noIncomingConnection": "Component has no incoming connections",
+    "invalidConnection": "Invalid connection between components"
   }
 }

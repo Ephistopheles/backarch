@@ -22,7 +22,12 @@
       "endpoint": "Punto de acceso",
       "service": "Servicio",
       "repository": "Repositorio",
-      "database": "Base de datos"
+      "database": "Base de datos",
+      "drivingAdapter": "Adaptador Primario",
+      "drivingPort": "Puerto Primario",
+      "domain": "Dominio",
+      "drivenPort": "Puerto Secundario",
+      "drivenAdapter": "Adaptador Secundario"
     }
   },
   "rightsidebar": {
@@ -68,6 +73,10 @@
     "endpointSkipsService": "El Endpoint no debería conectarse directamente al Repositorio. Usa una capa de Servicio.",
     "endpointToDatabase": "El Endpoint no debería conectarse directamente a la Base de datos. Sigue la arquitectura por capas.",
     "serviceSkipsRepository": "El Servicio no debería conectarse directamente a la Base de datos. Usa una capa de Repositorio.",
-    "circularDependency": "Dependencia circular detectada"
+    "circularDependency": "Dependencia circular detectada",
+    "requiredOutgoingConnection": "El componente debe tener una conexión saliente",
+    "suggestedOutgoingConnection": "El componente debería tener una conexión saliente",
+    "noIncomingConnection": "El componente no tiene conexiones entrantes",
+    "invalidConnection": "Conexión inválida entre componentes"
   }
 }

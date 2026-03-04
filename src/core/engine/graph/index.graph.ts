@@ -73,12 +73,17 @@ export const removeNode = (graph: BAGraph, nodeId: string): BAGraph => {
 
 /**
  * Add an edge between two nodes
- * Validates the connection before adding
+ * Validates the connection before adding based on architecture rules
  * @param graph - Current graph state
  * @param edge - Edge to add
+ * @param architectureId - Optional architecture for rule validation
  * @returns New graph with the edge added, or same graph if invalid
  */
-export const addEdge = (graph: BAGraph, edge: BAEdge): BAGraph => {
+export const addEdge = (
+  graph: BAGraph, 
+  edge: BAEdge, 
+  architectureId?: string | null
+): BAGraph => {
   const sourceNode = graph.nodes.find((n) => n.id === edge.source);
   const targetNode = graph.nodes.find((n) => n.id === edge.target);
 
@@ -86,7 +91,7 @@ export const addEdge = (graph: BAGraph, edge: BAEdge): BAGraph => {
     return graph;
   }
 
-  if (!canConnect(sourceNode.type, targetNode.type)) {
+  if (!canConnect(sourceNode.type, targetNode.type, architectureId)) {
     return graph;
   }
   return {

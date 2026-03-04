@@ -4,9 +4,12 @@
  * Provides real-time validation of the graph architecture.
  * Detects architectural violations, missing connections,
  * and provides actionable feedback to improve design quality.
+ * 
+ * Supports multiple architectures with dynamic validation rules.
  */
 
-import type { BAGraph, BANode } from '../types/graph/index.graph';
+import type { BAGraph, BANode, NodeType } from '../types/graph/index.graph';
+import { isValidConnection, getAllowedTargets } from '../rules/index.rules';
 
 /**
  * Validation severity levels
@@ -36,6 +39,81 @@ export interface ValidationResult {
 }
 
 /**
+ * Node validator function signature
+ */
+type NodeValidator = (
+  graph: BAGraph,
+  node: BANode,
+  architectureId: string
+) => ValidationItem | null;
+
+/**
+ * Graph validator function signature
+ */
+type GraphValidator = (
+  graph: BAGraph,
+  architectureId: string
+) => ValidationItem[];
+
+/**
+ * Architecture-specific validation configuration
+ */
+interface ArchitectureValidationConfig {
+  architectureId: string;
+  /** Node types that MUST have outgoing connections */
+  requiresOutgoing: NodeType[];
+  /** Node types that SHOULD have outgoing connections (warning) */
+  suggestsOutgoing: NodeType[];
+  /** Node types that SHOULD have incoming connections (warning) */
+  suggestsIncoming: NodeType[];
+  /** Entry point node types (don't need incoming) */
+  entryPoints: NodeType[];
+  /** Terminal node types (don't need outgoing) */
+  terminals: NodeType[];
+}
+
+/**
+ * Layered Architecture Validation Config
+ */
+const LAYERED_VALIDATION: ArchitectureValidationConfig = {
+  architectureId: 'layered',
+  requiresOutgoing: ['endpoint'],
+  suggestsOutgoing: ['service', 'repository'],
+  suggestsIncoming: ['service', 'database'],
+  entryPoints: ['endpoint'],
+  terminals: ['database'],
+};
+
+/**
+ * Hexagonal Architecture Validation Config
+ */
+const HEXAGONAL_VALIDATION: ArchitectureValidationConfig = {
+  architectureId: 'hexagonal',
+  requiresOutgoing: ['driving-adapter', 'driving-port'],
+  suggestsOutgoing: ['domain', 'driven-port'],
+  suggestsIncoming: ['driving-port', 'domain', 'driven-port', 'driven-adapter'],
+  entryPoints: ['driving-adapter'],
+  terminals: ['driven-adapter'],
+};
+
+/**
+ * All validation configurations
+ */
+const VALIDATION_CONFIGS: ArchitectureValidationConfig[] = [
+  LAYERED_VALIDATION,
+  HEXAGONAL_VALIDATION,
+];
+
+/**
+ * Get validation config for an architecture
+ */
+const getValidationConfig = (
+  architectureId: string
+): ArchitectureValidationConfig | null => {
+  return VALIDATION_CONFIGS.find((c) => c.architectureId === architectureId) ?? null;
+};
+
+/**
  * Check if a node has outgoing connections
  */
 const hasOutgoingConnection = (graph: BAGraph, nodeId: string): boolean => {
@@ -49,21 +127,32 @@ const hasIncomingConnection = (graph: BAGraph, nodeId: string): boolean => {
   return graph.edges.some((edge) => edge.target === nodeId);
 };
 
+// ============================================================================
+// Dynamic Validators (Architecture-agnostic)
+// ============================================================================
+
 /**
- * Validate that endpoints connect to services
+ * Validate nodes that REQUIRE outgoing connections
  */
-const validateEndpointConnections = (
-  graph: BAGraph,
-  node: BANode
+const validateRequiredOutgoing: NodeValidator = (
+  graph,
+  node,
+  architectureId
 ): ValidationItem | null => {
-  if (node.type !== 'endpoint') return null;
+  const config = getValidationConfig(architectureId);
+  if (!config || !config.requiresOutgoing.includes(node.type)) return null;
 
   if (!hasOutgoingConnection(graph, node.id)) {
+    const allowedTargets = getAllowedTargets(architectureId, node.type);
+    const targetDescription = allowedTargets.length > 0 
+      ? allowedTargets.join(' or ') 
+      : 'another component';
+    
     return {
-      id: `endpoint-no-service-${node.id}`,
+      id: `required-outgoing-${node.id}`,
       severity: 'error',
-      message: `Endpoint "${node.label}" must connect to a Service`,
-      messageKey: 'validation.endpointMustConnectToService',
+      message: `${node.type} "${node.label}" must connect to ${targetDescription}`,
+      messageKey: 'validation.requiredOutgoingConnection',
       affectedNodeIds: [node.id],
     };
   }
@@ -72,20 +161,28 @@ const validateEndpointConnections = (
 };
 
 /**
- * Validate that services connect to repositories
+ * Validate nodes that SHOULD have outgoing connections
  */
-const validateServiceConnections = (
-  graph: BAGraph,
-  node: BANode
+const validateSuggestedOutgoing: NodeValidator = (
+  graph,
+  node,
+  architectureId
 ): ValidationItem | null => {
-  if (node.type !== 'service') return null;
+  const config = getValidationConfig(architectureId);
+  if (!config || !config.suggestsOutgoing.includes(node.type)) return null;
+  if (config.terminals.includes(node.type)) return null; // Terminal nodes don't need outgoing
 
   if (!hasOutgoingConnection(graph, node.id)) {
+    const allowedTargets = getAllowedTargets(architectureId, node.type);
+    const targetDescription = allowedTargets.length > 0 
+      ? allowedTargets.join(' or ') 
+      : 'another component';
+    
     return {
-      id: `service-no-repository-${node.id}`,
+      id: `suggested-outgoing-${node.id}`,
       severity: 'warning',
-      message: `Service "${node.label}" should connect to a Repository`,
-      messageKey: 'validation.serviceShouldConnectToRepository',
+      message: `${node.type} "${node.label}" should connect to ${targetDescription}`,
+      messageKey: 'validation.suggestedOutgoingConnection',
       affectedNodeIds: [node.id],
     };
   }
@@ -94,42 +191,23 @@ const validateServiceConnections = (
 };
 
 /**
- * Validate that repositories connect to databases
+ * Validate nodes that SHOULD have incoming connections
  */
-const validateRepositoryConnections = (
-  graph: BAGraph,
-  node: BANode
+const validateSuggestedIncoming: NodeValidator = (
+  graph,
+  node,
+  architectureId
 ): ValidationItem | null => {
-  if (node.type !== 'repository') return null;
-
-  if (!hasOutgoingConnection(graph, node.id)) {
-    return {
-      id: `repository-no-database-${node.id}`,
-      severity: 'warning',
-      message: `Repository "${node.label}" should connect to a Database`,
-      messageKey: 'validation.repositoryShouldConnectToDatabase',
-      affectedNodeIds: [node.id],
-    };
-  }
-
-  return null;
-};
-
-/**
- * Validate that services have incoming connections
- */
-const validateServiceHasIncoming = (
-  graph: BAGraph,
-  node: BANode
-): ValidationItem | null => {
-  if (node.type !== 'service') return null;
+  const config = getValidationConfig(architectureId);
+  if (!config || !config.suggestsIncoming.includes(node.type)) return null;
+  if (config.entryPoints.includes(node.type)) return null; // Entry points don't need incoming
 
   if (!hasIncomingConnection(graph, node.id)) {
     return {
-      id: `service-orphan-${node.id}`,
+      id: `orphan-${node.id}`,
       severity: 'info',
-      message: `Service "${node.label}" has no incoming connections`,
-      messageKey: 'validation.serviceNoIncoming',
+      message: `${node.type} "${node.label}" has no incoming connections`,
+      messageKey: 'validation.noIncomingConnection',
       affectedNodeIds: [node.id],
     };
   }
@@ -138,32 +216,13 @@ const validateServiceHasIncoming = (
 };
 
 /**
- * Validate that databases have incoming connections
+ * Validate connections based on architecture rules
+ * Checks if each edge is valid according to the architecture's connection rules
  */
-const validateDatabaseHasIncoming = (
-  graph: BAGraph,
-  node: BANode
-): ValidationItem | null => {
-  if (node.type !== 'database') return null;
-
-  if (!hasIncomingConnection(graph, node.id)) {
-    return {
-      id: `database-orphan-${node.id}`,
-      severity: 'warning',
-      message: `Database "${node.label}" is not connected to any Repository`,
-      messageKey: 'validation.databaseNotConnected',
-      affectedNodeIds: [node.id],
-    };
-  }
-
-  return null;
-};
-
-/**
- * Validate that endpoints don't connect directly to repositories
- * This would skip the service layer
- */
-const validateLayerViolations = (graph: BAGraph): ValidationItem[] => {
+const validateConnectionRules: GraphValidator = (
+  graph,
+  architectureId
+): ValidationItem[] => {
   const violations: ValidationItem[] = [];
 
   for (const edge of graph.edges) {
@@ -172,35 +231,12 @@ const validateLayerViolations = (graph: BAGraph): ValidationItem[] => {
 
     if (!sourceNode || !targetNode) continue;
 
-    // Endpoint directly to Repository (skipping Service)
-    if (sourceNode.type === 'endpoint' && targetNode.type === 'repository') {
+    if (!isValidConnection(architectureId, sourceNode.type, targetNode.type)) {
       violations.push({
-        id: `layer-violation-${edge.id}`,
+        id: `invalid-connection-${edge.id}`,
         severity: 'error',
-        message: `Endpoint "${sourceNode.label}" should not connect directly to Repository "${targetNode.label}". Use a Service layer.`,
-        messageKey: 'validation.endpointSkipsService',
-        affectedNodeIds: [sourceNode.id, targetNode.id],
-      });
-    }
-
-    // Endpoint directly to Database (skipping all layers)
-    if (sourceNode.type === 'endpoint' && targetNode.type === 'database') {
-      violations.push({
-        id: `layer-violation-${edge.id}`,
-        severity: 'error',
-        message: `Endpoint "${sourceNode.label}" should not connect directly to Database "${targetNode.label}". Follow layered architecture.`,
-        messageKey: 'validation.endpointToDatabase',
-        affectedNodeIds: [sourceNode.id, targetNode.id],
-      });
-    }
-
-    // Service directly to Database (skipping Repository)
-    if (sourceNode.type === 'service' && targetNode.type === 'database') {
-      violations.push({
-        id: `layer-violation-${edge.id}`,
-        severity: 'error',
-        message: `Service "${sourceNode.label}" should not connect directly to Database "${targetNode.label}". Use a Repository layer.`,
-        messageKey: 'validation.serviceSkipsRepository',
+        message: `${sourceNode.type} "${sourceNode.label}" cannot connect to ${targetNode.type} "${targetNode.label}"`,
+        messageKey: 'validation.invalidConnection',
         affectedNodeIds: [sourceNode.id, targetNode.id],
       });
     }
@@ -211,8 +247,9 @@ const validateLayerViolations = (graph: BAGraph): ValidationItem[] => {
 
 /**
  * Detect circular dependencies in the graph
+ * This is architecture-agnostic
  */
-const detectCircularDependencies = (graph: BAGraph): ValidationItem[] => {
+const detectCircularDependencies: GraphValidator = (graph): ValidationItem[] => {
   const violations: ValidationItem[] = [];
   const visited = new Set<string>();
   const recursionStack = new Set<string>();
@@ -267,36 +304,51 @@ const detectCircularDependencies = (graph: BAGraph): ValidationItem[] => {
   return violations;
 };
 
+// ============================================================================
+// Main Validation Entry Point
+// ============================================================================
+
 /**
  * Main validation function
- * Validates the entire graph and returns all issues found
+ * Validates the entire graph based on the selected architecture
+ * 
+ * @param graph - The graph to validate
+ * @param architectureId - The architecture context (optional for legacy support)
+ * @returns Validation results with all issues found
  */
-export const validateGraph = (graph: BAGraph): ValidationResult => {
+export const validateGraph = (
+  graph: BAGraph,
+  architectureId: string | null = 'layered'
+): ValidationResult => {
   const items: ValidationItem[] = [];
+  const archId = architectureId ?? 'layered';
+
+  // Node validators
+  const nodeValidators: NodeValidator[] = [
+    validateRequiredOutgoing,
+    validateSuggestedOutgoing,
+    validateSuggestedIncoming,
+  ];
 
   // Validate individual nodes
   for (const node of graph.nodes) {
-    const validators = [
-      validateEndpointConnections,
-      validateServiceConnections,
-      validateRepositoryConnections,
-      validateServiceHasIncoming,
-      validateDatabaseHasIncoming,
-    ];
-
-    for (const validator of validators) {
-      const result = validator(graph, node);
+    for (const validator of nodeValidators) {
+      const result = validator(graph, node, archId);
       if (result) {
         items.push(result);
       }
     }
   }
 
-  // Validate layer violations
-  items.push(...validateLayerViolations(graph));
+  // Graph-level validators
+  const graphValidators: GraphValidator[] = [
+    validateConnectionRules,
+    detectCircularDependencies,
+  ];
 
-  // Detect circular dependencies
-  items.push(...detectCircularDependencies(graph));
+  for (const validator of graphValidators) {
+    items.push(...validator(graph, archId));
+  }
 
   // Calculate counts
   const errorCount = items.filter((i) => i.severity === 'error').length;
