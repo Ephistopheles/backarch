@@ -1,25 +1,325 @@
-import { Layout, Typography, Space, Descriptions, Tag, Empty } from 'antd';
-import { ApiOutlined } from '@ant-design/icons';
+/**
+ * Right Sidebar Component - Node Inspector
+ *
+ * Displays and allows editing of the selected node's properties.
+ * Shows different fields based on the node type.
+ * Changes trigger graph updates and validation.
+ */
+
+import {
+  Layout,
+  Typography,
+  Space,
+  Empty,
+  Input,
+  Select,
+  Form,
+  Tag,
+  Button,
+  Divider,
+  Image,
+} from 'antd';
+import { DeleteOutlined } from '@ant-design/icons';
 import { useAppStore } from '@/store/app.store';
 import { t } from '@/i18n/index.i18n';
+import type { BANode, NodeType } from '@/core/engine/types/graph/index.graph';
+import { getComponentDefinition } from '@/core/catalog/index.catalog';
 
 const { Sider: RightSider } = Layout;
 const { Title, Text } = Typography;
 
-const RightSidebar = () => {
+/**
+ * Node type badge with icon
+ */
+const NodeTypeBadge = ({ type }: { type: NodeType }) => {
+  const definition = getComponentDefinition(type);
+
+  if (!definition) return null;
+
+  return (
+    <Space style={{ marginBottom: '16px' }}>
+      <div
+        style={{
+          width: '32px',
+          height: '32px',
+          background: definition.bgColor,
+          borderRadius: '6px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
+        <Image
+          src={definition.icon}
+          alt={type}
+          preview={false}
+          width={18}
+          height={18}
+        />
+      </div>
+      <Text strong style={{ textTransform: 'capitalize' }}>
+        {t(definition.labelKey)}
+      </Text>
+    </Space>
+  );
+};
+
+/**
+ * Common node fields (label, description)
+ */
+interface CommonFieldsProps {
+  node: BANode;
+  onUpdate: (updates: Partial<Omit<BANode, 'id'>>) => void;
+}
+
+const CommonFields = ({ node, onUpdate }: CommonFieldsProps) => {
+  return (
+    <>
+      <Form.Item label={t('rightsidebar.fields.name')} style={{ marginBottom: 12 }}>
+        <Input
+          value={node.label}
+          onChange={(e) => onUpdate({ label: (e.target as HTMLInputElement).value })}
+          placeholder={t('rightsidebar.fields.namePlaceholder')}
+        />
+      </Form.Item>
+
+      <Form.Item label={t('rightsidebar.fields.description')} style={{ marginBottom: 12 }}>
+        <Input.TextArea
+          value={node.metadata?.description ?? ''}
+          onChange={(e) =>
+            onUpdate({
+              metadata: { ...node.metadata, description: (e.target as HTMLTextAreaElement).value },
+            })
+          }
+          placeholder={t('rightsidebar.fields.descriptionPlaceholder')}
+          rows={2}
+        />
+      </Form.Item>
+
+      <Form.Item label={t('rightsidebar.fields.id')} style={{ marginBottom: 12 }}>
+        <Text code copyable style={{ fontSize: '11px' }}>
+          {node.id}
+        </Text>
+      </Form.Item>
+
+      {node.layer && (
+        <Form.Item label={t('rightsidebar.fields.layer')} style={{ marginBottom: 12 }}>
+          <Tag color='blue'>{node.layer}</Tag>
+        </Form.Item>
+      )}
+    </>
+  );
+};
+
+/**
+ * Endpoint-specific fields
+ */
+const EndpointFields = ({ node, onUpdate }: CommonFieldsProps) => {
+  const httpMethods = ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'] as const;
+
+  return (
+    <>
+      <Form.Item label={t('rightsidebar.fields.httpMethod')} style={{ marginBottom: 12 }}>
+        <Select
+          value={node.metadata?.httpMethod ?? 'GET'}
+          onChange={(value) =>
+            onUpdate({
+              metadata: { ...node.metadata, httpMethod: value },
+            })
+          }
+          style={{ width: '100%' }}
+        >
+          {httpMethods.map((method) => (
+            <Select.Option key={method} value={method}>
+              <Tag
+                color={
+                  method === 'GET'
+                    ? 'green'
+                    : method === 'POST'
+                      ? 'blue'
+                      : method === 'PUT'
+                        ? 'orange'
+                        : method === 'DELETE'
+                          ? 'red'
+                          : 'purple'
+                }
+              >
+                {method}
+              </Tag>
+            </Select.Option>
+          ))}
+        </Select>
+      </Form.Item>
+
+      <Form.Item label={t('rightsidebar.fields.path')} style={{ marginBottom: 12 }}>
+        <Input
+          value={node.metadata?.path ?? ''}
+          onChange={(e) =>
+            onUpdate({
+              metadata: { ...node.metadata, path: (e.target as HTMLInputElement).value },
+            })
+          }
+          placeholder='/api/example'
+          addonBefore='/'
+        />
+      </Form.Item>
+    </>
+  );
+};
+
+/**
+ * Service-specific fields
+ */
+const ServiceFields = ({ node, onUpdate }: CommonFieldsProps) => {
+  return (
+    <Form.Item label={t('rightsidebar.fields.className')} style={{ marginBottom: 12 }}>
+      <Input
+        value={node.metadata?.className ?? ''}
+        onChange={(e) =>
+          onUpdate({
+            metadata: { ...node.metadata, className: (e.target as HTMLInputElement).value },
+          })
+        }
+        placeholder='UserService'
+      />
+    </Form.Item>
+  );
+};
+
+/**
+ * Repository-specific fields
+ */
+const RepositoryFields = ({ node, onUpdate }: CommonFieldsProps) => {
+  return (
+    <Form.Item label={t('rightsidebar.fields.entityType')} style={{ marginBottom: 12 }}>
+      <Input
+        value={node.metadata?.entityType ?? ''}
+        onChange={(e) =>
+          onUpdate({
+            metadata: { ...node.metadata, entityType: (e.target as HTMLInputElement).value },
+          })
+        }
+        placeholder='User'
+      />
+    </Form.Item>
+  );
+};
+
+/**
+ * Database-specific fields
+ */
+const DatabaseFields = ({ node, onUpdate }: CommonFieldsProps) => {
+  const databaseTypes = ['postgresql', 'mysql', 'mongodb'] as const;
+
+  return (
+    <Form.Item label={t('rightsidebar.fields.databaseType')} style={{ marginBottom: 12 }}>
+      <Select
+        value={node.metadata?.databaseType ?? 'postgresql'}
+        onChange={(value) =>
+          onUpdate({
+            metadata: { ...node.metadata, databaseType: value },
+          })
+        }
+        style={{ width: '100%' }}
+      >
+        {databaseTypes.map((dbType) => (
+          <Select.Option key={dbType} value={dbType}>
+            {dbType.charAt(0).toUpperCase() + dbType.slice(1)}
+          </Select.Option>
+        ))}
+      </Select>
+    </Form.Item>
+  );
+};
+
+/**
+ * Type-specific fields based on node type
+ */
+const TypeSpecificFields = ({ node, onUpdate }: CommonFieldsProps) => {
+  switch (node.type) {
+    case 'endpoint':
+      return <EndpointFields node={node} onUpdate={onUpdate} />;
+    case 'service':
+      return <ServiceFields node={node} onUpdate={onUpdate} />;
+    case 'repository':
+      return <RepositoryFields node={node} onUpdate={onUpdate} />;
+    case 'database':
+      return <DatabaseFields node={node} onUpdate={onUpdate} />;
+    default:
+      return null;
+  }
+};
+
+/**
+ * Empty state when no node is selected
+ */
+const EmptyInspector = () => {
   useAppStore((s) => s.language);
 
-  // Mock data - in real app this would come from selected node
-  const selectedNode = null; // Set to null to show empty state
+  return (
+    <Empty
+      image={Empty.PRESENTED_IMAGE_SIMPLE}
+      description={
+        <Text type='secondary' style={{ fontSize: '13px' }}>
+          {t('rightsidebar.helpText')}
+        </Text>
+      }
+      style={{ marginTop: '60px' }}
+    />
+  );
+};
 
-  const mockNodeData = {
-    type: 'endpoint',
-    name: 'GetUserById',
-    id: 'node-123',
-    description: 'Retrieves user information by ID',
-    method: 'GET',
-    path: '/api/users/:id',
+/**
+ * Node inspector panel
+ */
+const NodeInspector = ({ node }: { node: BANode }) => {
+  const updateGraphNode = useAppStore((s) => s.updateGraphNode);
+  const removeGraphNode = useAppStore((s) => s.removeGraphNode);
+  const selectNode = useAppStore((s) => s.selectNode);
+  useAppStore((s) => s.language);
+
+  const handleUpdate = (updates: Partial<Omit<BANode, 'id'>>) => {
+    updateGraphNode(node.id, updates);
   };
+
+  const handleDelete = () => {
+    removeGraphNode(node.id);
+    selectNode(null);
+  };
+
+  return (
+    <div>
+      <NodeTypeBadge type={node.type} />
+
+      <Form layout='vertical' size='small'>
+        <CommonFields node={node} onUpdate={handleUpdate} />
+
+        <Divider style={{ margin: '16px 0' }} />
+
+        <Title level={5} style={{ fontSize: '12px', marginBottom: '12px', color: '#666' }}>
+          {t('rightsidebar.typeSpecificTitle')}
+        </Title>
+
+        <TypeSpecificFields node={node} onUpdate={handleUpdate} />
+      </Form>
+
+      <Divider style={{ margin: '16px 0' }} />
+
+      <Button
+        danger
+        block
+        icon={<DeleteOutlined />}
+        onClick={handleDelete}
+      >
+        {t('rightsidebar.deleteNode')}
+      </Button>
+    </div>
+  );
+};
+
+const RightSidebar = () => {
+  useAppStore((s) => s.language);
+  const selectedNode = useAppStore((s) => s.getSelectedNode());
 
   return (
     <RightSider
@@ -54,104 +354,9 @@ const RightSidebar = () => {
       </div>
 
       {selectedNode ? (
-        <div>
-          {/* Node type badge */}
-          <Space style={{ marginBottom: '16px' }}>
-            <div
-              style={{
-                width: '32px',
-                height: '32px',
-                background: '#e6f7ff',
-                borderRadius: '6px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontSize: '16px',
-              }}
-            >
-              <ApiOutlined style={{ color: '#1890ff' }} />
-            </div>
-            <Text strong>Endpoint</Text>
-          </Space>
-
-          {/* Node details */}
-          <Descriptions column={1} size='small' bordered>
-            <Descriptions.Item
-              label={
-                <Text type='secondary' style={{ fontSize: '12px' }}>
-                  Name
-                </Text>
-              }
-            >
-              <Text>{mockNodeData.name}</Text>
-            </Descriptions.Item>
-            <Descriptions.Item
-              label={
-                <Text type='secondary' style={{ fontSize: '12px' }}>
-                  ID
-                </Text>
-              }
-            >
-              <Text code style={{ fontSize: '11px' }}>
-                {mockNodeData.id}
-              </Text>
-            </Descriptions.Item>
-            <Descriptions.Item
-              label={
-                <Text type='secondary' style={{ fontSize: '12px' }}>
-                  Description
-                </Text>
-              }
-            >
-              <Text style={{ fontSize: '13px' }}>
-                {mockNodeData.description}
-              </Text>
-            </Descriptions.Item>
-            <Descriptions.Item
-              label={
-                <Text type='secondary' style={{ fontSize: '12px' }}>
-                  Method
-                </Text>
-              }
-            >
-              <Tag color='green'>GET</Tag>
-            </Descriptions.Item>
-            <Descriptions.Item
-              label={
-                <Text type='secondary' style={{ fontSize: '12px' }}>
-                  Path
-                </Text>
-              }
-            >
-              <Text code>{mockNodeData.path}</Text>
-            </Descriptions.Item>
-          </Descriptions>
-
-          {/* Future editing notice */}
-          <div
-            style={{
-              marginTop: '16px',
-              padding: '12px',
-              background: '#fafafa',
-              borderRadius: '6px',
-              border: '1px solid #e8e8e8',
-            }}
-          >
-            <Text type='secondary' italic style={{ fontSize: '12px' }}>
-              Editing capabilities coming soon...
-            </Text>
-          </div>
-        </div>
+        <NodeInspector node={selectedNode} />
       ) : (
-        <Empty
-          image={Empty.PRESENTED_IMAGE_SIMPLE}
-          description={
-            <Text type='secondary' style={{ fontSize: '13px' }}>
-              {t('rightsidebar.helpText')}
-            </Text>
-          }
-          style={{ marginTop: '60px' }}
-        />
+        <EmptyInspector />
       )}
     </RightSider>
   );

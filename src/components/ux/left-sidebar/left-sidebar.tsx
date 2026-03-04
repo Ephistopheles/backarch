@@ -1,8 +1,16 @@
-import { Layout, Typography, Space, Card, Image } from 'antd';
+/**
+ * Left Sidebar Component
+ *
+ * Displays the component catalog based on the selected architecture.
+ * Components can be dragged onto the canvas to create nodes.
+ * The catalog dynamically updates when the architecture changes.
+ */
+
+import { Layout, Typography, Space, Card, Image, Empty } from 'antd';
 import { useAppStore } from '@/store/app.store';
 import { t, type TranslationKey } from '@/i18n/index.i18n';
 import type { NodeType } from '@/core/engine/types/graph/index.graph';
-import { COMPONENT_BLOCKS } from '@/core/components/index.components';
+import { getCatalogByArchitecture, type CatalogComponent } from '@/core/catalog/index.catalog';
 
 const { Sider: LeftSider } = Layout;
 const { Title, Text } = Typography;
@@ -10,12 +18,26 @@ const { Title, Text } = Typography;
 interface ComponentItemProps {
   type: NodeType;
   labelKey: TranslationKey;
-  icon: React.ReactNode;
+  icon: string;
   bgColor: string;
+  disabled?: boolean;
 }
 
-const ComponentItem = ({ type, labelKey, icon, bgColor }: ComponentItemProps) => {
-  const onDragStart = (event: React.DragEvent<HTMLDivElement>) => {
+/**
+ * Individual draggable component item
+ */
+const ComponentItem = ({
+  type,
+  labelKey,
+  icon,
+  bgColor,
+  disabled = false,
+}: ComponentItemProps) => {
+  const onDragStart = (event: DragEvent) => {
+    if (disabled || !event.dataTransfer) {
+      event.preventDefault();
+      return;
+    }
     event.dataTransfer.setData('application/backarch-node', type);
     event.dataTransfer.effectAllowed = 'move';
   };
@@ -23,13 +45,14 @@ const ComponentItem = ({ type, labelKey, icon, bgColor }: ComponentItemProps) =>
   return (
     <Card
       size='small'
-      hoverable
+      hoverable={!disabled}
       style={{
-        cursor: 'grab',
+        cursor: disabled ? 'not-allowed' : 'grab',
         marginBottom: '8px',
         borderRadius: '8px',
+        opacity: disabled ? 0.5 : 1,
       }}
-      draggable
+      draggable={!disabled}
       onDragStart={onDragStart}
     >
       <Space size='middle'>
@@ -45,7 +68,14 @@ const ComponentItem = ({ type, labelKey, icon, bgColor }: ComponentItemProps) =>
             fontSize: '16px',
           }}
         >
-          {icon}
+          <Image
+            src={icon}
+            alt={String(labelKey)}
+            preview={false}
+            draggable={false}
+            width={20}
+            height={20}
+          />
         </div>
         <Text strong style={{ fontSize: '14px' }}>
           {t(labelKey)}
@@ -55,8 +85,54 @@ const ComponentItem = ({ type, labelKey, icon, bgColor }: ComponentItemProps) =>
   );
 };
 
-const LeftSidebar = () => {
+/**
+ * Empty state when no architecture is selected
+ */
+const EmptyCatalog = () => {
+  // Subscribe to language for reactivity
   useAppStore((s) => s.language);
+
+  return (
+    <Empty
+      image={Empty.PRESENTED_IMAGE_SIMPLE}
+      description={
+        <Text type='secondary' style={{ fontSize: '13px' }}>
+          {t('leftsidebar.selectArchitecture')}
+        </Text>
+      }
+      style={{ marginTop: '60px' }}
+    />
+  );
+};
+
+/**
+ * Component catalog list
+ */
+const CatalogList = ({ components }: { components: CatalogComponent[] }) => {
+  return (
+    <div>
+      {components.map((component) => (
+        <ComponentItem
+          key={component.type}
+          type={component.type}
+          labelKey={component.labelKey}
+          icon={component.icon}
+          bgColor={component.bgColor}
+        />
+      ))}
+    </div>
+  );
+};
+
+const LeftSidebar = () => {
+  // Subscribe to language and architecture for reactivity
+  useAppStore((s) => s.language);
+  const selectedArchitecture = useAppStore((s) => s.selectedArchitecture);
+  const isConfigComplete = useAppStore((s) => s.isConfigurationComplete());
+
+  // Get catalog components based on selected architecture
+  const catalogComponents = getCatalogByArchitecture(selectedArchitecture);
+  const hasCatalog = catalogComponents.length > 0 && isConfigComplete;
 
   return (
     <LeftSider
@@ -89,24 +165,13 @@ const LeftSidebar = () => {
           {t('leftsidebar.title')}
         </Title>
       </div>
-      <div>
-        {COMPONENT_BLOCKS.map((component) => (
-          <ComponentItem
-            key={component.type}
-            type={component.type}
-            labelKey={component.labelKey}
-            icon={
-              <Image
-                src={component.icon}
-                alt={component.labelKey}
-                preview={false}
-                draggable={false}
-              />
-            }
-            bgColor={component.bgColor}
-          />
-        ))}
-      </div>
+
+      {hasCatalog ? (
+        <CatalogList components={catalogComponents} />
+      ) : (
+        <EmptyCatalog />
+      )}
+
       <div
         style={{
           marginTop: '16px',
@@ -118,7 +183,7 @@ const LeftSidebar = () => {
           type='secondary'
           style={{ fontSize: '12px', textAlign: 'center', display: 'block' }}
         >
-          {t('leftsidebar.helpText')}
+          {hasCatalog ? t('leftsidebar.helpText') : t('leftsidebar.configHelpText')}
         </Text>
       </div>
     </LeftSider>

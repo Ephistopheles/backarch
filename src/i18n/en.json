@@ -17,6 +17,8 @@
   "leftsidebar": {
     "title": "Components",
     "helpText": "Drag components to the canvas to design your backend architecture",
+    "configHelpText": "Select a stack, version, and architecture to begin",
+    "selectArchitecture": "Select an architecture to view available components",
     "componentTypes": {
       "endpoint": "Endpoint",
       "service": "Service",
@@ -26,11 +28,47 @@
   },
   "rightsidebar": {
     "title": "Inspector",
-    "helpText": "Select a component on the canvas to view and edit its properties"
+    "helpText": "Select a component on the canvas to view and edit its properties",
+    "typeSpecificTitle": "Type Configuration",
+    "deleteNode": "Delete Component",
+    "fields": {
+      "name": "Name",
+      "namePlaceholder": "Enter component name",
+      "description": "Description",
+      "descriptionPlaceholder": "Enter a brief description",
+      "id": "ID",
+      "layer": "Layer",
+      "httpMethod": "HTTP Method",
+      "path": "Path",
+      "className": "Class Name",
+      "entityType": "Entity Type",
+      "databaseType": "Database Type"
+    }
   },
   "footer": {
     "title": "Validation & Feedback",
     "helpText": "Issues found in your architecture will be displayed here",
-    "issuesFound": "Issues Found"
+    "issuesFound": "Issues Found",
+    "noIssues": "No issues",
+    "errors": "Errors",
+    "warnings": "Warnings",
+    "info": "Info",
+    "emptyCanvas": "Add components to the canvas to start validation",
+    "allGood": "Architecture looks good!"
+  },
+  "canvas": {
+    "selectConfiguration": "Configure your project to start designing",
+    "configurationHint": "Select a stack, version, and architecture style in the header"
+  },
+  "validation": {
+    "endpointMustConnectToService": "Endpoint must connect to a Service",
+    "serviceShouldConnectToRepository": "Service should connect to a Repository",
+    "repositoryShouldConnectToDatabase": "Repository should connect to a Database",
+    "serviceNoIncoming": "Service has no incoming connections",
+    "databaseNotConnected": "Database is not connected to any Repository",
+    "endpointSkipsService": "Endpoint should not connect directly to Repository. Use a Service layer.",
+    "endpointToDatabase": "Endpoint should not connect directly to Database. Follow layered architecture.",
+    "serviceSkipsRepository": "Service should not connect directly to Database. Use a Repository layer.",
+    "circularDependency": "Circular dependency detected"
   }
 }

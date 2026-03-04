@@ -17,6 +17,8 @@
   "leftsidebar": {
     "title": "Componentes",
     "helpText": "Arrastra los componentes al lienzo para diseñar tu arquitectura de backend",
+    "configHelpText": "Selecciona un stack, versión y arquitectura para comenzar",
+    "selectArchitecture": "Selecciona una arquitectura para ver los componentes disponibles",
     "componentTypes": {
       "endpoint": "Punto de acceso",
       "service": "Servicio",
@@ -26,11 +28,47 @@
   },
   "rightsidebar": {
     "title": "Inspector",
-    "helpText": "Selecciona un componente en el lienzo para ver y editar sus propiedades"
+    "helpText": "Selecciona un componente en el lienzo para ver y editar sus propiedades",
+    "typeSpecificTitle": "Configuración de Tipo",
+    "deleteNode": "Eliminar Componente",
+    "fields": {
+      "name": "Nombre",
+      "namePlaceholder": "Ingresa el nombre del componente",
+      "description": "Descripción",
+      "descriptionPlaceholder": "Ingresa una breve descripción",
+      "id": "ID",
+      "layer": "Capa",
+      "httpMethod": "Método HTTP",
+      "path": "Ruta",
+      "className": "Nombre de Clase",
+      "entityType": "Tipo de Entidad",
+      "databaseType": "Tipo de Base de Datos"
+    }
   },
   "footer": {
     "title": "Validación y Retroalimentación",
     "helpText": "Los problemas encontrados en tu arquitectura se mostrarán aquí",
-    "issuesFound": "Problemas Encontrados"
+    "issuesFound": "Problemas Encontrados",
+    "noIssues": "Sin problemas",
+    "errors": "Errores",
+    "warnings": "Advertencias",
+    "info": "Info",
+    "emptyCanvas": "Agrega componentes al lienzo para iniciar la validación",
+    "allGood": "¡La arquitectura se ve bien!"
+  },
+  "canvas": {
+    "selectConfiguration": "Configura tu proyecto para comenzar a diseñar",
+    "configurationHint": "Selecciona un stack, versión y estilo de arquitectura en el encabezado"
+  },
+  "validation": {
+    "endpointMustConnectToService": "El Endpoint debe conectarse a un Servicio",
+    "serviceShouldConnectToRepository": "El Servicio debería conectarse a un Repositorio",
+    "repositoryShouldConnectToDatabase": "El Repositorio debería conectarse a una Base de datos",
+    "serviceNoIncoming": "El Servicio no tiene conexiones entrantes",
+    "databaseNotConnected": "La Base de datos no está conectada a ningún Repositorio",
+    "endpointSkipsService": "El Endpoint no debería conectarse directamente al Repositorio. Usa una capa de Servicio.",
+    "endpointToDatabase": "El Endpoint no debería conectarse directamente a la Base de datos. Sigue la arquitectura por capas.",
+    "serviceSkipsRepository": "El Servicio no debería conectarse directamente a la Base de datos. Usa una capa de Repositorio.",
+    "circularDependency": "Dependencia circular detectada"
   }
 }
