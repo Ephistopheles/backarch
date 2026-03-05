@@ -6,7 +6,7 @@
  */
 
 import { Handle, Position } from '@xyflow/react';
-import { Typography, Image } from 'antd';
+import { Typography, Image, Flex } from 'antd';
 import type { NodeType, NodeMetadata } from '@/core/engine/types/graph/index.graph';
 import { getComponentDefinition } from '@/core/catalog/index.catalog';
 
@@ -39,44 +39,17 @@ function BackArchNode({ data, selected }: BackArchNodeProps) {
   if (!definition) return null;
 
   return (
-    <div
-      style={{
-        padding: '12px 16px',
-        borderRadius: '8px',
-        background: '#fff',
-        border: selected ? '2px solid #1890ff' : '1px solid #e8e8e8',
-        boxShadow: selected
-          ? '0 4px 12px rgba(24, 144, 255, 0.3)'
-          : '0 2px 8px rgba(0, 0, 0, 0.1)',
-        minWidth: '140px',
-        transition: 'all 0.2s ease',
-      }}
-    >
+    <Flex vertical className={`ba-node ${selected ? 'ba-node--selected' : ''}`}>
       {/* Input Handle - top */}
-      <Handle
-        type='target'
-        position={Position.Top}
-        style={{
-          background: '#1890ff',
-          width: '10px',
-          height: '10px',
-          border: '2px solid #fff',
-        }}
-      />
+      <Handle type='target' position={Position.Top} className='ba-node__handle' />
 
       {/* Node content */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-        <div
-          style={{
-            width: '32px',
-            height: '32px',
-            background: definition.bgColor,
-            borderRadius: '6px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            flexShrink: 0,
-          }}
+      <Flex align='center' className='ba-node__content'>
+        <Flex
+          align='center'
+          justify='center'
+          className='ba-node__icon-wrapper'
+          style={{ background: definition.bgColor }}
         >
           <Image
             src={definition.icon}
@@ -84,65 +57,29 @@ function BackArchNode({ data, selected }: BackArchNodeProps) {
             preview={false}
             width={18}
             height={18}
-            style={{ display: 'block' }}
           />
-        </div>
+        </Flex>
 
-        <div style={{ minWidth: 0 }}>
-          <Text
-            strong
-            style={{
-              display: 'block',
-              fontSize: '13px',
-              lineHeight: '1.3',
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
-              whiteSpace: 'nowrap',
-            }}
-          >
+        <Flex vertical className='ba-node__info'>
+          <Text strong className='ba-node__label'>
             {data.label}
           </Text>
-          <Text
-            type='secondary'
-            style={{
-              display: 'block',
-              fontSize: '11px',
-              textTransform: 'capitalize',
-            }}
-          >
+          <Text type='secondary' className='ba-node__type'>
             {data.nodeType}
           </Text>
-        </div>
-      </div>
+        </Flex>
+      </Flex>
 
       {/* Metadata indicators */}
       {data.metadata?.httpMethod && (
-        <div
-          style={{
-            marginTop: '8px',
-            padding: '2px 6px',
-            background: '#f0f0f0',
-            borderRadius: '4px',
-            fontSize: '10px',
-            color: '#666',
-          }}
-        >
+        <Text className='ba-node__metadata'>
           {data.metadata.httpMethod} {data.metadata.path || '/'}
-        </div>
+        </Text>
       )}
 
       {/* Output Handle - bottom */}
-      <Handle
-        type='source'
-        position={Position.Bottom}
-        style={{
-          background: '#1890ff',
-          width: '10px',
-          height: '10px',
-          border: '2px solid #fff',
-        }}
-      />
-    </div>
+      <Handle type='source' position={Position.Bottom} className='ba-node__handle' />
+    </Flex>
   );
 }
 

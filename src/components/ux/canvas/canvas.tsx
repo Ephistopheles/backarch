@@ -26,7 +26,7 @@ import '@xyflow/react/dist/style.css';
 import { useAppStore, type FlowNodeData } from '@/store/app.store';
 import type { NodeType } from '@/core/engine/types/graph/index.graph';
 import BackArchNode from './backarch-node';
-import { Typography, Empty } from 'antd';
+import { Typography, Empty, Flex } from 'antd';
 import { t } from '@/i18n/index.i18n';
 
 const { Text } = Typography;
@@ -45,34 +45,21 @@ const EmptyCanvasOverlay = () => {
   useAppStore((s) => s.language);
 
   return (
-    <div
-      style={{
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        background: 'rgba(255, 255, 255, 0.9)',
-        zIndex: 10,
-      }}
-    >
+    <Flex align='center' justify='center' className='ba-canvas__overlay'>
       <Empty
         image={Empty.PRESENTED_IMAGE_SIMPLE}
         description={
-          <div>
-            <Text type='secondary' style={{ fontSize: '14px', display: 'block' }}>
+          <Flex vertical>
+            <Text type='secondary' className='ba-canvas__empty-title'>
               {t('canvas.selectConfiguration')}
             </Text>
-            <Text type='secondary' style={{ fontSize: '12px' }}>
+            <Text type='secondary' className='ba-canvas__empty-hint'>
               {t('canvas.configurationHint')}
             </Text>
-          </div>
+          </Flex>
         }
       />
-    </div>
+    </Flex>
   );
 };
 
@@ -105,7 +92,6 @@ const Canvas = () => {
    */
   const onNodesChange: OnNodesChange = useCallback(
     (changes: NodeChange[]) => {
-      // Handle selection changes
       for (const change of changes) {
         if (change.type === 'select') {
           if (change.selected) {
@@ -115,13 +101,11 @@ const Canvas = () => {
           }
         }
 
-        // Handle node removal
         if (change.type === 'remove') {
           removeGraphNode(change.id);
         }
       }
 
-      // Apply position changes to store
       const hasPositionChanges = changes.some(
         (c) => c.type === 'position' && c.position
       );
@@ -146,7 +130,6 @@ const Canvas = () => {
         }
       }
 
-      // Apply other edge changes
       useAppStore.setState((state) => ({
         edges: applyEdgeChanges(changes, state.edges),
       }));
@@ -194,7 +177,7 @@ const Canvas = () => {
   }, [selectNode]);
 
   return (
-    <div style={{ width: '100%', height: '100%', position: 'relative' }}>
+    <Flex className='ba-canvas'>
       {!isConfigComplete && <EmptyCanvasOverlay />}
 
       <ReactFlow
@@ -243,7 +226,7 @@ const Canvas = () => {
           maskColor='rgba(0, 0, 0, 0.1)'
         />
       </ReactFlow>
-    </div>
+    </Flex>
   );
 };
 

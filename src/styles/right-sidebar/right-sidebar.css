@@ -1,0 +1,72 @@
+.ba-right-sidebar {
+  padding: 16px;
+  overflow-y: auto;
+  border-left: 1px solid var(--ant-color-border);
+}
+
+.ba-right-sidebar__header {
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--ant-color-border);
+  margin-bottom: 16px;
+}
+
+.ba-right-sidebar__title {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: var(--ant-color-text-tertiary);
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+}
+
+/* Node type badge */
+.ba-node-badge {
+  margin-bottom: 16px;
+}
+
+.ba-node-badge__icon-wrapper {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ba-node-badge__label {
+  text-transform: capitalize;
+}
+
+/* Form fields */
+.ba-form-item {
+  margin-bottom: 12px;
+}
+
+.ba-form-item__id {
+  font-size: 11px;
+}
+
+/* Type specific section */
+.ba-type-section__title {
+  font-size: 12px;
+  margin-bottom: 12px;
+  color: var(--ant-color-text-secondary);
+  white-space: nowrap;
+}
+
+/* Delete button */
+.ba-delete-btn {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Empty state */
+.ba-empty-inspector {
+  margin-top: 60px;
+}
+
+.ba-empty-inspector__text {
+  font-size: 13px;
+}

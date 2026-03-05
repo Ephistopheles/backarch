@@ -12,7 +12,7 @@ const GlobalTheme: ThemeConfig = {
     /* === Background === */
     colorBgBase: '#F5F7FA',
     colorBgContainer: '#FFFFFF',
-    colorBgLayout: '#F5F7FA',
+    colorBgLayout: '#FAFAFA',
 
     /* === Text === */
     colorText: '#1F2937',
@@ -21,17 +21,68 @@ const GlobalTheme: ThemeConfig = {
 
     /* === Border & Radius === */
     borderRadius: 10,
+    borderRadiusSM: 6,
+    borderRadiusLG: 12,
     colorBorder: '#E5E7EB',
     colorBorderSecondary: '#F3F4F6',
 
     /* === Typography === */
     fontFamily:
       '"SpaceGrotesk", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
+    fontSize: 12,
+    fontSizeSM: 10,
+    fontSizeLG: 14,
+
+    /* === Spacing === */
+    marginXS: 8,
+    marginSM: 12,
+    margin: 16,
+    marginMD: 20,
+    marginLG: 24,
+    paddingXS: 8,
+    paddingSM: 12,
+    padding: 16,
+    paddingMD: 20,
+    paddingLG: 24,
   },
   components: {
     Layout: {
       headerBg: '#FFFFFF',
+      headerPadding: '0 24px',
+      headerHeight: 64,
       siderBg: '#FFFFFF',
+      footerBg: '#FFFFFF',
+      footerPadding: 0,
+    },
+    Card: {
+      paddingLG: 12,
+      borderRadiusLG: 8,
+    },
+    Button: {
+      borderRadius: 8,
+      controlHeight: 36,
+    },
+    Select: {
+      borderRadius: 8,
+      controlHeight: 36,
+    },
+    Input: {
+      borderRadius: 8,
+      controlHeight: 36,
+    },
+    Form: {
+      itemMarginBottom: 12,
+      verticalLabelPadding: '0 0 4px',
+    },
+    Divider: {
+      marginLG: 16,
+    },
+    Typography: {
+      titleMarginBottom: 0,
+      titleMarginTop: 0,
+    },
+    Empty: {
+      colorTextDescription: '#6B7280',
     },
   },
 };

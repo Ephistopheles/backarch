@@ -1,0 +1,46 @@
+.ba-header {
+  border-bottom: 1px solid var(--ant-color-border);
+}
+
+.ba-header__row {
+  flex-wrap: nowrap;
+}
+
+.ba-header__logo-col {
+  flex-shrink: 0;
+}
+
+.ba-header__config-col {
+  display: flex;
+  justify-content: center;
+}
+
+.ba-header__config-group {
+  flex-shrink: 0;
+}
+
+.ba-header__config-label {
+  white-space: nowrap;
+}
+
+.ba-header__divider {
+  height: 24px;
+  margin: 0 8px;
+}
+
+.ba-header__actions-col {
+  flex-shrink: 0;
+}
+
+.ba-header__btn-language {
+  min-width: 70px;
+}
+
+.ba-header__btn-generate {
+  min-width: 120px;
+}
+
+.ba-header__btn-icon {
+  width: 18px;
+  height: 18px;
+}

@@ -1,4 +1,21 @@
-import { Layout, Row, Col, Image, Button, Space, Divider } from 'antd';
+/**
+ * Header Component
+ *
+ * Application header with logo, configuration selects, and action buttons.
+ * Uses Ant Design Layout.Header with semantic markup.
+ */
+
+import {
+  Layout,
+  Row,
+  Col,
+  Image,
+  Button,
+  Space,
+  Divider,
+  Typography,
+  Flex,
+} from 'antd';
 import Language from '@/assets/icons/language.svg';
 import Play from '@/assets/icons/play.svg';
 import BackArchLogo from '/logo/backarch-logo.svg';
@@ -10,8 +27,10 @@ import {
   getVersionsByStackId,
   ARCHITECTURES,
 } from '@/core/stack/index.stack';
+import '@/styles/header/header.css';
 
 const { Header: AntHeader } = Layout;
+const { Text } = Typography;
 
 const Header = () => {
   const language = useAppStore((s) => s.language);
@@ -29,9 +48,10 @@ const Header = () => {
   };
 
   return (
-    <AntHeader style={{ borderBottom: '1px solid #e8e8e8' }}>
-      <Row justify='space-between' align='middle'>
-        <Col>
+    <AntHeader className='ba-header'>
+      <Row justify='space-between' align='middle' className='ba-header__row'>
+        {/* Logo */}
+        <Col className='ba-header__logo-col'>
           <Image
             src={BackArchLogo}
             alt='BackArch Logo'
@@ -40,10 +60,19 @@ const Header = () => {
             height={50}
           />
         </Col>
-        <Col>
-          <Space size='middle'>
-            <Space size='small' align='center'>
-              <span>{t('header.stack.label')}</span>
+
+        {/* Configuration Selects */}
+        <Col flex='auto' className='ba-header__config-col'>
+          <Space size='middle' wrap>
+            {/* Stack Select */}
+            <Space
+              size='small'
+              align='center'
+              className='ba-header__config-group'
+            >
+              <Text className='ba-header__config-label'>
+                {t('header.stack.label')}
+              </Text>
               <BASelect
                 options={STACKS}
                 placeholder={t('header.stack.placeholder')}
@@ -56,12 +85,18 @@ const Header = () => {
                 showPopover
               />
             </Space>
-            <Divider
-              orientation='vertical'
-              style={{ height: '24px', margin: '0 8px' }}
-            />
-            <Space size='small' align='center'>
-              <span>{t('header.version.label')}</span>
+
+            <Divider orientation='vertical' className='ba-header__divider' />
+
+            {/* Version Select */}
+            <Space
+              size='small'
+              align='center'
+              className='ba-header__config-group'
+            >
+              <Text className='ba-header__config-label'>
+                {t('header.version.label')}
+              </Text>
               <BASelect
                 options={
                   selectedStack ? getVersionsByStackId(selectedStack) : []
@@ -77,12 +112,18 @@ const Header = () => {
                 disabled={!selectedStack}
               />
             </Space>
-            <Divider
-              orientation='vertical'
-              style={{ height: '24px', margin: '0 8px' }}
-            />
-            <Space size='small' align='center'>
-              <span>{t('header.architecture.label')}</span>
+
+            <Divider orientation='vertical' className='ba-header__divider' />
+
+            {/* Architecture Select */}
+            <Space
+              size='small'
+              align='center'
+              className='ba-header__config-group'
+            >
+              <Text className='ba-header__config-label'>
+                {t('header.architecture.label')}
+              </Text>
               <BASelect
                 options={ARCHITECTURES}
                 placeholder={t('header.architecture.placeholder')}
@@ -98,27 +139,36 @@ const Header = () => {
             </Space>
           </Space>
         </Col>
-        <Col>
+
+        {/* Action Buttons */}
+        <Col className='ba-header__actions-col'>
           <Space size='middle'>
-            <Button onClick={toggleLanguage}>
-              {language.toUpperCase()}
-              <img
-                src={Language}
-                alt='Language'
-                width={18}
-                height={18}
-                draggable={false}
-              />
+            <Button
+              onClick={toggleLanguage}
+              className='ba-header__btn-language'
+            >
+              <Flex align='center' gap={4}>
+                {language.toUpperCase()}
+                <img
+                  src={Language}
+                  alt='Language'
+                  width={18}
+                  height={18}
+                  draggable={false}
+                />
+              </Flex>
             </Button>
-            <Button type='primary' disabled>
-              {t('header.generate')}
-              <img
-                src={Play}
-                alt='Generate'
-                width={18}
-                height={18}
-                draggable={false}
-              />
+            <Button type='primary' disabled className='ba-header__btn-generate'>
+              <Flex align='center' gap={4}>
+                {t('header.generate')}
+                <img
+                  src={Play}
+                  alt='Generate'
+                  width={18}
+                  height={18}
+                  draggable={false}
+                />
+              </Flex>
             </Button>
           </Space>
         </Col>

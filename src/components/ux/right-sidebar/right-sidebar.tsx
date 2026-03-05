@@ -18,6 +18,7 @@ import {
   Button,
   Divider,
   Image,
+  Flex,
 } from 'antd';
 import { DeleteOutlined } from '@ant-design/icons';
 import { useAppStore } from '@/store/app.store';
@@ -37,17 +38,12 @@ const NodeTypeBadge = ({ type }: { type: NodeType }) => {
   if (!definition) return null;
 
   return (
-    <Space style={{ marginBottom: '16px' }}>
-      <div
-        style={{
-          width: '32px',
-          height: '32px',
-          background: definition.bgColor,
-          borderRadius: '6px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}
+    <Space className='ba-node-badge'>
+      <Flex
+        align='center'
+        justify='center'
+        className='ba-node-badge__icon-wrapper'
+        style={{ background: definition.bgColor }}
       >
         <Image
           src={definition.icon}
@@ -55,10 +51,9 @@ const NodeTypeBadge = ({ type }: { type: NodeType }) => {
           preview={false}
           width={18}
           height={18}
-          style={{ display: 'block' }}
         />
-      </div>
-      <Text strong style={{ textTransform: 'capitalize' }}>
+      </Flex>
+      <Text strong className='ba-node-badge__label'>
         {t(definition.labelKey)}
       </Text>
     </Space>
@@ -73,44 +68,42 @@ interface CommonFieldsProps {
   onUpdate: (updates: Partial<Omit<BANode, 'id'>>) => void;
 }
 
-const CommonFields = ({ node, onUpdate }: CommonFieldsProps) => {
-  return (
-    <>
-      <Form.Item label={t('rightsidebar.fields.name')} style={{ marginBottom: 12 }}>
-        <Input
-          value={node.label}
-          onChange={(e) => onUpdate({ label: (e.target as HTMLInputElement).value })}
-          placeholder={t('rightsidebar.fields.namePlaceholder')}
-        />
-      </Form.Item>
+const CommonFields = ({ node, onUpdate }: CommonFieldsProps) => (
+  <>
+    <Form.Item label={t('rightsidebar.fields.name')}>
+      <Input
+        value={node.label}
+        onChange={(e) => onUpdate({ label: (e.target as HTMLInputElement).value })}
+        placeholder={t('rightsidebar.fields.namePlaceholder')}
+      />
+    </Form.Item>
 
-      <Form.Item label={t('rightsidebar.fields.description')} style={{ marginBottom: 12 }}>
-        <Input.TextArea
-          value={node.metadata?.description ?? ''}
-          onChange={(e) =>
-            onUpdate({
-              metadata: { ...node.metadata, description: (e.target as HTMLTextAreaElement).value },
-            })
-          }
-          placeholder={t('rightsidebar.fields.descriptionPlaceholder')}
-          rows={2}
-        />
-      </Form.Item>
+    <Form.Item label={t('rightsidebar.fields.description')}>
+      <Input.TextArea
+        value={node.metadata?.description ?? ''}
+        onChange={(e) =>
+          onUpdate({
+            metadata: { ...node.metadata, description: (e.target as HTMLTextAreaElement).value },
+          })
+        }
+        placeholder={t('rightsidebar.fields.descriptionPlaceholder')}
+        rows={2}
+      />
+    </Form.Item>
 
-      <Form.Item label={t('rightsidebar.fields.id')} style={{ marginBottom: 12 }}>
-        <Text code copyable style={{ fontSize: '11px' }}>
-          {node.id}
-        </Text>
-      </Form.Item>
+    <Form.Item label={t('rightsidebar.fields.id')}>
+      <Text code copyable className='ba-form-item__id'>
+        {node.id}
+      </Text>
+    </Form.Item>
 
-      {node.layer && (
-        <Form.Item label={t('rightsidebar.fields.layer')} style={{ marginBottom: 12 }}>
-          <Tag color='blue'>{node.layer}</Tag>
-        </Form.Item>
-      )}
-    </>
-  );
-};
+    {node.layer && (
+      <Form.Item label={t('rightsidebar.fields.layer')}>
+        <Tag color='blue'>{node.layer}</Tag>
+      </Form.Item>
+    )}
+  </>
+);
 
 /**
  * Endpoint-specific fields
@@ -120,7 +113,7 @@ const EndpointFields = ({ node, onUpdate }: CommonFieldsProps) => {
 
   return (
     <>
-      <Form.Item label={t('rightsidebar.fields.httpMethod')} style={{ marginBottom: 12 }}>
+      <Form.Item label={t('rightsidebar.fields.httpMethod')}>
         <Select
           value={node.metadata?.httpMethod ?? 'GET'}
           onChange={(value) =>
@@ -128,7 +121,6 @@ const EndpointFields = ({ node, onUpdate }: CommonFieldsProps) => {
               metadata: { ...node.metadata, httpMethod: value },
             })
           }
-          style={{ width: '100%' }}
         >
           {httpMethods.map((method) => (
             <Select.Option key={method} value={method}>
@@ -152,7 +144,7 @@ const EndpointFields = ({ node, onUpdate }: CommonFieldsProps) => {
         </Select>
       </Form.Item>
 
-      <Form.Item label={t('rightsidebar.fields.path')} style={{ marginBottom: 12 }}>
+      <Form.Item label={t('rightsidebar.fields.path')}>
         <Input
           value={node.metadata?.path ?? ''}
           onChange={(e) =>
@@ -171,40 +163,36 @@ const EndpointFields = ({ node, onUpdate }: CommonFieldsProps) => {
 /**
  * Service-specific fields
  */
-const ServiceFields = ({ node, onUpdate }: CommonFieldsProps) => {
-  return (
-    <Form.Item label={t('rightsidebar.fields.className')} style={{ marginBottom: 12 }}>
-      <Input
-        value={node.metadata?.className ?? ''}
-        onChange={(e) =>
-          onUpdate({
-            metadata: { ...node.metadata, className: (e.target as HTMLInputElement).value },
-          })
-        }
-        placeholder='UserService'
-      />
-    </Form.Item>
-  );
-};
+const ServiceFields = ({ node, onUpdate }: CommonFieldsProps) => (
+  <Form.Item label={t('rightsidebar.fields.className')}>
+    <Input
+      value={node.metadata?.className ?? ''}
+      onChange={(e) =>
+        onUpdate({
+          metadata: { ...node.metadata, className: (e.target as HTMLInputElement).value },
+        })
+      }
+      placeholder='UserService'
+    />
+  </Form.Item>
+);
 
 /**
  * Repository-specific fields
  */
-const RepositoryFields = ({ node, onUpdate }: CommonFieldsProps) => {
-  return (
-    <Form.Item label={t('rightsidebar.fields.entityType')} style={{ marginBottom: 12 }}>
-      <Input
-        value={node.metadata?.entityType ?? ''}
-        onChange={(e) =>
-          onUpdate({
-            metadata: { ...node.metadata, entityType: (e.target as HTMLInputElement).value },
-          })
-        }
-        placeholder='User'
-      />
-    </Form.Item>
-  );
-};
+const RepositoryFields = ({ node, onUpdate }: CommonFieldsProps) => (
+  <Form.Item label={t('rightsidebar.fields.entityType')}>
+    <Input
+      value={node.metadata?.entityType ?? ''}
+      onChange={(e) =>
+        onUpdate({
+          metadata: { ...node.metadata, entityType: (e.target as HTMLInputElement).value },
+        })
+      }
+      placeholder='User'
+    />
+  </Form.Item>
+);
 
 /**
  * Database-specific fields
@@ -213,7 +201,7 @@ const DatabaseFields = ({ node, onUpdate }: CommonFieldsProps) => {
   const databaseTypes = ['postgresql', 'mysql', 'mongodb'] as const;
 
   return (
-    <Form.Item label={t('rightsidebar.fields.databaseType')} style={{ marginBottom: 12 }}>
+    <Form.Item label={t('rightsidebar.fields.databaseType')}>
       <Select
         value={node.metadata?.databaseType ?? 'postgresql'}
         onChange={(value) =>
@@ -221,7 +209,6 @@ const DatabaseFields = ({ node, onUpdate }: CommonFieldsProps) => {
             metadata: { ...node.metadata, databaseType: value },
           })
         }
-        style={{ width: '100%' }}
       >
         {databaseTypes.map((dbType) => (
           <Select.Option key={dbType} value={dbType}>
@@ -261,11 +248,11 @@ const EmptyInspector = () => {
     <Empty
       image={Empty.PRESENTED_IMAGE_SIMPLE}
       description={
-        <Text type='secondary' style={{ fontSize: '13px' }}>
+        <Text type='secondary' className='ba-empty-inspector__text'>
           {t('rightsidebar.helpText')}
         </Text>
       }
-      style={{ marginTop: '60px' }}
+      className='ba-empty-inspector'
     />
   );
 };
@@ -289,32 +276,33 @@ const NodeInspector = ({ node }: { node: BANode }) => {
   };
 
   return (
-    <div>
+    <Flex vertical>
       <NodeTypeBadge type={node.type} />
 
       <Form layout='vertical' size='small'>
         <CommonFields node={node} onUpdate={handleUpdate} />
 
-        <Divider style={{ margin: '16px 0' }} />
+        <Divider />
 
-        <Title level={5} style={{ fontSize: '12px', marginBottom: '12px', color: '#666' }}>
+        <Title level={5} className='ba-type-section__title'>
           {t('rightsidebar.typeSpecificTitle')}
         </Title>
 
         <TypeSpecificFields node={node} onUpdate={handleUpdate} />
       </Form>
 
-      <Divider style={{ margin: '16px 0' }} />
+      <Divider />
 
       <Button
         danger
         block
         icon={<DeleteOutlined />}
         onClick={handleDelete}
+        className='ba-delete-btn'
       >
         {t('rightsidebar.deleteNode')}
       </Button>
-    </div>
+    </Flex>
   );
 };
 
@@ -323,42 +311,14 @@ const RightSidebar = () => {
   const selectedNode = useAppStore((s) => s.getSelectedNode());
 
   return (
-    <RightSider
-      width={280}
-      style={{
-        background: '#fff',
-        borderLeft: '1px solid #e8e8e8',
-        padding: '16px',
-        overflowY: 'auto',
-      }}
-    >
-      <div
-        style={{
-          paddingBottom: '12px',
-          borderBottom: '1px solid #e8e8e8',
-          marginBottom: '16px',
-        }}
-      >
-        <Title
-          level={5}
-          style={{
-            margin: 0,
-            fontSize: '12px',
-            fontWeight: 600,
-            textTransform: 'uppercase',
-            color: '#999',
-            letterSpacing: '0.5px',
-          }}
-        >
+    <RightSider width={280} className='ba-right-sidebar'>
+      <Flex vertical className='ba-right-sidebar__header'>
+        <Title level={5} className='ba-right-sidebar__title'>
           {t('rightsidebar.title')}
         </Title>
-      </div>
+      </Flex>
 
-      {selectedNode ? (
-        <NodeInspector node={selectedNode} />
-      ) : (
-        <EmptyInspector />
-      )}
+      {selectedNode ? <NodeInspector node={selectedNode} /> : <EmptyInspector />}
     </RightSider>
   );
 };

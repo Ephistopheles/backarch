@@ -1,4 +1,4 @@
-import { Select, Popover, Typography, Space } from 'antd';
+import { Select, Popover, Typography, Flex } from 'antd';
 
 const { Paragraph, Link } = Typography;
 
@@ -32,15 +32,14 @@ const BASelect = <T,>({
     const documentationUrl = getDocumentationUrl?.(opt);
 
     return (
-      <Space style={{ maxWidth: 260 }} orientation='vertical' size='small'>
+      <Flex vertical gap='small' className='ba-select__popover-content'>
         {description && <Paragraph>{description}</Paragraph>}
-
         {documentationUrl && (
           <Link href={documentationUrl} target='_blank'>
             See more details →
           </Link>
         )}
-      </Space>
+      </Flex>
     );
   };
 
@@ -68,6 +67,7 @@ const BASelect = <T,>({
       options={mappedOptions}
       disabled={disabled}
       allowClear
+      className='ba-select'
     />
   );
 };

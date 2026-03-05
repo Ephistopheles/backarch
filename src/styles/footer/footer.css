@@ -1,0 +1,78 @@
+.ba-footer {
+  display: flex;
+  flex-direction: column;
+  border-top: 1px solid var(--ant-color-border);
+  min-height: 200px;
+  max-height: 200px;
+}
+
+.ba-footer__header {
+  padding: 12px 20px;
+  border-bottom: 1px solid var(--ant-color-border);
+  background: var(--ant-color-bg-layout);
+}
+
+.ba-footer__title {
+  margin: 0;
+  white-space: nowrap;
+}
+
+.ba-footer__badge-text {
+  margin-right: 4px;
+  white-space: nowrap;
+}
+
+.ba-footer__content {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.ba-footer__content--empty {
+  padding: 8px 0;
+}
+
+.ba-footer__success {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  color: var(--ant-color-success);
+}
+
+.ba-footer__success-icon {
+  font-size: 32px;
+  margin-bottom: 8px;
+}
+
+.ba-footer__success-text {
+  font-weight: 500;
+  color: var(--ant-color-success);
+}
+
+/* Validation item styles */
+.ba-validation-item {
+  padding: 10px 20px;
+  border-bottom: 1px solid var(--ant-color-border-secondary);
+  transition: background 0.3s;
+}
+
+.ba-validation-item--clickable {
+  cursor: pointer;
+}
+
+.ba-validation-item--error {
+  background: #fff1f0;
+}
+
+.ba-validation-item--warning {
+  background: #fffbe6;
+}
+
+.ba-validation-item--info {
+  background: #e6f7ff;
+}
+
+.ba-validation-item__message {
+  font-size: 13px;
+}

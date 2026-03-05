@@ -1,0 +1,91 @@
+.ba-canvas {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.ba-canvas__overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.9);
+  z-index: 10;
+}
+
+.ba-canvas__empty-title {
+  font-size: 14px;
+  display: block;
+}
+
+.ba-canvas__empty-hint {
+  font-size: 12px;
+}
+
+/* BackArch Node styles */
+.ba-node {
+  padding: 12px 16px;
+  border-radius: 8px;
+  background: var(--ant-color-bg-container);
+  border: 1px solid var(--ant-color-border);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  min-width: 140px;
+  transition: all 0.2s ease;
+}
+
+.ba-node--selected {
+  border: 2px solid var(--ant-color-primary);
+  box-shadow: 0 4px 12px rgba(24, 144, 255, 0.3);
+}
+
+.ba-node__content {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.ba-node__icon-wrapper {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.ba-node__info {
+  min-width: 0;
+}
+
+.ba-node__label {
+  display: block;
+  font-size: 13px;
+  line-height: 1.3;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ba-node__type {
+  display: block;
+  font-size: 11px;
+  text-transform: capitalize;
+}
+
+.ba-node__metadata {
+  margin-top: 8px;
+  padding: 2px 6px;
+  background: var(--ant-color-bg-layout);
+  border-radius: 4px;
+  font-size: 10px;
+  color: var(--ant-color-text-secondary);
+}
+
+.ba-node__handle {
+  background: var(--ant-color-primary);
+  width: 10px;
+  height: 10px;
+  border: 2px solid var(--ant-color-bg-container);
+}

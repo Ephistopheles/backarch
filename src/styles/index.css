@@ -1,0 +1,15 @@
+/* Global styles */
+@import './global/global.css';
+
+/* App layout */
+@import './app/app.css';
+
+/* Component styles */
+@import './header/header.css';
+@import './footer/footer.css';
+@import './left-sidebar/left-sidebar.css';
+@import './right-sidebar/right-sidebar.css';
+@import './canvas/canvas.css';
+
+/* UI components */
+@import './ui/select.css';
