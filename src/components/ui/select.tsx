@@ -1,4 +1,5 @@
 import { Select, Popover, Typography, Flex } from 'antd';
+import { t } from '@/i18n/index.i18n';
 
 const { Paragraph, Link } = Typography;
 
@@ -36,7 +37,7 @@ const BASelect = <T,>({
         {description && <Paragraph>{description}</Paragraph>}
         {documentationUrl && (
           <Link href={documentationUrl} target='_blank'>
-            See more details →
+            {t('header.popover.seeMoreDetails')}
           </Link>
         )}
       </Flex>

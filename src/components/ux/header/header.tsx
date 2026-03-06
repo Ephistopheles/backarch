@@ -20,7 +20,7 @@ import Language from '@/assets/icons/language.svg';
 import Play from '@/assets/icons/play.svg';
 import BackArchLogo from '/logo/backarch-logo.svg';
 import { useAppStore } from '@/store/app.store';
-import { t, type Language as LanguageType } from '@/i18n/index.i18n';
+import { t, type Language as LanguageType, type TranslationKey } from '@/i18n/index.i18n';
 import BASelect from '@/components/ui/select';
 import {
   STACKS,
@@ -80,7 +80,7 @@ const Header = () => {
                 onChange={setStack}
                 getValue={(s) => s.id}
                 getLabel={(s) => s.name}
-                getDescription={(s) => s.description}
+                getDescription={(s) => t(`stacks.${s.description}.description` as TranslationKey)}
                 getDocumentationUrl={(s) => s.documentationUrl}
                 showPopover
               />
@@ -106,7 +106,7 @@ const Header = () => {
                 onChange={setVersion}
                 getValue={(v) => v.id}
                 getLabel={(v) => v.version}
-                getDescription={(v) => v.description}
+                getDescription={(v) => t(`versions.${v.description}.description` as TranslationKey)}
                 getDocumentationUrl={(v) => v.documentationUrl}
                 showPopover
                 disabled={!selectedStack}
@@ -131,7 +131,7 @@ const Header = () => {
                 onChange={setArchitecture}
                 getValue={(a) => a.id}
                 getLabel={(a) => a.name}
-                getDescription={(a) => a.description}
+                getDescription={(a) => t(`architectures.${a.description}.description` as TranslationKey)}
                 getDocumentationUrl={(a) => a.documentationUrl}
                 showPopover
                 disabled={!selectedStack}

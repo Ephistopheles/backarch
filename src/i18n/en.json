@@ -12,7 +12,28 @@
       "label": "Architecture",
       "placeholder": "Select architecture"
     },
-    "generate": "Generate"
+    "generate": "Generate",
+    "popover": {
+      "seeMoreDetails": "See more details →"
+    }
+  },
+  "stacks": {
+    "spring_boot": {
+      "description": "A Java-based framework for building web applications and microservices."
+    }
+  },
+  "versions": {
+    "spring_boot_4_0_2": {
+      "description": "Spring Boot version 4.0.2 with enhanced performance and new features for building production-ready applications."
+    }
+  },
+  "architectures": {
+    "layered": {
+      "description": "A traditional architectural style that organizes code into layers (e.g., presentation, business logic, data access)."
+    },
+    "hexagonal": {
+      "description": "An architectural style that emphasizes separation of concerns and promotes testability by isolating the core logic from external dependencies."
+    }
   },
   "leftsidebar": {
     "title": "Components",
