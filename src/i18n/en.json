@@ -86,6 +86,7 @@
     "configurationHint": "Select a stack, version, and architecture style in the header"
   },
   "validation": {
+    "or": "or",
     "endpointMustConnectToService": "Endpoint must connect to a Service",
     "serviceShouldConnectToRepository": "Service should connect to a Repository",
     "repositoryShouldConnectToDatabase": "Repository should connect to a Database",
@@ -94,10 +95,10 @@
     "endpointSkipsService": "Endpoint should not connect directly to Repository. Use a Service layer.",
     "endpointToDatabase": "Endpoint should not connect directly to Database. Follow layered architecture.",
     "serviceSkipsRepository": "Service should not connect directly to Database. Use a Repository layer.",
-    "circularDependency": "Circular dependency detected",
-    "requiredOutgoingConnection": "Component must have an outgoing connection",
-    "suggestedOutgoingConnection": "Component should have an outgoing connection",
-    "noIncomingConnection": "Component has no incoming connections",
-    "invalidConnection": "Invalid connection between components"
+    "circularDependency": "Circular dependency detected: {{cyclePath}}",
+    "requiredOutgoingConnection": "{{nodeType}} \"{{nodeLabel}}\" must connect to {{targetDescription}}",
+    "suggestedOutgoingConnection": "{{nodeType}} \"{{nodeLabel}}\" should connect to {{targetDescription}}",
+    "noIncomingConnection": "{{nodeType}} \"{{nodeLabel}}\" has no incoming connections",
+    "invalidConnection": "{{sourceType}} \"{{sourceLabel}}\" cannot connect to {{targetType}} \"{{targetLabel}}\""
   }
 }

@@ -86,6 +86,7 @@
     "configurationHint": "Selecciona un stack, versión y estilo de arquitectura en el encabezado"
   },
   "validation": {
+    "or": "o",
     "endpointMustConnectToService": "El Endpoint debe conectarse a un Servicio",
     "serviceShouldConnectToRepository": "El Servicio debería conectarse a un Repositorio",
     "repositoryShouldConnectToDatabase": "El Repositorio debería conectarse a una Base de datos",
@@ -94,10 +95,10 @@
     "endpointSkipsService": "El Endpoint no debería conectarse directamente al Repositorio. Usa una capa de Servicio.",
     "endpointToDatabase": "El Endpoint no debería conectarse directamente a la Base de datos. Sigue la arquitectura por capas.",
     "serviceSkipsRepository": "El Servicio no debería conectarse directamente a la Base de datos. Usa una capa de Repositorio.",
-    "circularDependency": "Dependencia circular detectada",
-    "requiredOutgoingConnection": "El componente debe tener una conexión saliente",
-    "suggestedOutgoingConnection": "El componente debería tener una conexión saliente",
-    "noIncomingConnection": "El componente no tiene conexiones entrantes",
-    "invalidConnection": "Conexión inválida entre componentes"
+    "circularDependency": "Dependencia circular detectada: {{cyclePath}}",
+    "requiredOutgoingConnection": "{{nodeType}} \"{{nodeLabel}}\" debe conectarse a {{targetDescription}}",
+    "suggestedOutgoingConnection": "{{nodeType}} \"{{nodeLabel}}\" debería conectarse a {{targetDescription}}",
+    "noIncomingConnection": "{{nodeType}} \"{{nodeLabel}}\" no tiene conexiones entrantes",
+    "invalidConnection": "{{sourceType}} \"{{sourceLabel}}\" no puede conectarse a {{targetType}} \"{{targetLabel}}\""
   }
 }

@@ -11,6 +11,7 @@ import { CheckCircleOutlined } from '@ant-design/icons';
 import { useAppStore } from '@/store/app.store';
 import { t } from '@/i18n/index.i18n';
 import type { ValidationSeverity, ValidationItem } from '@/core/engine/validation/index.validation';
+import type { TranslationKey } from '@/i18n/index.i18n';
 import SearchIcon from '@/assets/icons/search.svg';
 import ErrorIcon from '@/assets/icons/error.svg';
 import WarningIcon from '@/assets/icons/warning.svg';
@@ -41,6 +42,60 @@ const getSeverityTag = (severity: ValidationSeverity) => {
     info: 'processing',
   };
   return <Tag color={colors[severity]}>{severity.toUpperCase()}</Tag>;
+};
+
+/**
+ * Map node types to their i18n keys
+ */
+const NODE_TYPE_KEYS: Record<string, TranslationKey> = {
+  'endpoint': 'leftsidebar.componentTypes.endpoint',
+  'service': 'leftsidebar.componentTypes.service',
+  'repository': 'leftsidebar.componentTypes.repository',
+  'database': 'leftsidebar.componentTypes.database',
+  'driving-adapter': 'leftsidebar.componentTypes.drivingAdapter',
+  'driving-port': 'leftsidebar.componentTypes.drivingPort',
+  'domain': 'leftsidebar.componentTypes.domain',
+  'driven-port': 'leftsidebar.componentTypes.drivenPort',
+  'driven-adapter': 'leftsidebar.componentTypes.drivenAdapter',
+};
+
+/**
+ * Translate a node type to the current language
+ */
+const translateNodeType = (nodeType: string): string => {
+  const key = NODE_TYPE_KEYS[nodeType];
+  return key ? t(key) : nodeType;
+};
+
+/**
+ * Translate a target description (e.g., "service or repository")
+ */
+const translateTargetDescription = (description: string): string => {
+  // Split by " or " and translate each part
+  const parts = description.split(' or ');
+  const translatedParts = parts.map((part) => translateNodeType(part.trim()));
+  return translatedParts.join(` ${t('validation.or')} `);
+};
+
+/**
+ * Get translated message for validation item
+ */
+const getTranslatedMessage = (item: ValidationItem): string => {
+  const translatedParams = item.messageParams
+    ? Object.fromEntries(
+        Object.entries(item.messageParams).map(([key, value]) => {
+          if (key === 'nodeType' || key === 'sourceType' || key === 'targetType') {
+            return [key, translateNodeType(String(value))];
+          }
+          if (key === 'targetDescription') {
+            return [key, translateTargetDescription(String(value))];
+          }
+          return [key, value];
+        })
+      )
+    : undefined;
+
+  return t(item.messageKey as TranslationKey, translatedParams);
 };
 
 /**
@@ -96,7 +151,7 @@ const ValidationItemRow = ({ item, onSelect }: ValidationItemRowProps) => {
         <Col>
           <Space size='middle'>
             {getSeverityIcon(item.severity)}
-            <Text className='ba-validation-item__message'>{item.message}</Text>
+            <Text className='ba-validation-item__message'>{getTranslatedMessage(item)}</Text>
           </Space>
         </Col>
         <Col>{getSeverityTag(item.severity)}</Col>

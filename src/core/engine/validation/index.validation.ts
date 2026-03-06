@@ -24,6 +24,7 @@ export interface ValidationItem {
   severity: ValidationSeverity;
   message: string;
   messageKey: string;
+  messageParams?: Record<string, string | number>;
   affectedNodeIds: string[];
 }
 
@@ -153,6 +154,11 @@ const validateRequiredOutgoing: NodeValidator = (
       severity: 'error',
       message: `${node.type} "${node.label}" must connect to ${targetDescription}`,
       messageKey: 'validation.requiredOutgoingConnection',
+      messageParams: {
+        nodeType: node.type,
+        nodeLabel: node.label,
+        targetDescription,
+      },
       affectedNodeIds: [node.id],
     };
   }
@@ -183,6 +189,11 @@ const validateSuggestedOutgoing: NodeValidator = (
       severity: 'warning',
       message: `${node.type} "${node.label}" should connect to ${targetDescription}`,
       messageKey: 'validation.suggestedOutgoingConnection',
+      messageParams: {
+        nodeType: node.type,
+        nodeLabel: node.label,
+        targetDescription,
+      },
       affectedNodeIds: [node.id],
     };
   }
@@ -208,6 +219,10 @@ const validateSuggestedIncoming: NodeValidator = (
       severity: 'info',
       message: `${node.type} "${node.label}" has no incoming connections`,
       messageKey: 'validation.noIncomingConnection',
+      messageParams: {
+        nodeType: node.type,
+        nodeLabel: node.label,
+      },
       affectedNodeIds: [node.id],
     };
   }
@@ -237,6 +252,12 @@ const validateConnectionRules: GraphValidator = (
         severity: 'error',
         message: `${sourceNode.type} "${sourceNode.label}" cannot connect to ${targetNode.type} "${targetNode.label}"`,
         messageKey: 'validation.invalidConnection',
+        messageParams: {
+          sourceType: sourceNode.type,
+          sourceLabel: sourceNode.label,
+          targetType: targetNode.type,
+          targetLabel: targetNode.label,
+        },
         affectedNodeIds: [sourceNode.id, targetNode.id],
       });
     }
@@ -283,6 +304,9 @@ const detectCircularDependencies: GraphValidator = (graph): ValidationItem[] => 
           severity: 'error',
           message: `Circular dependency detected: ${cycleNodes.join(' → ')}`,
           messageKey: 'validation.circularDependency',
+          messageParams: {
+            cyclePath: cycleNodes.join(' → '),
+          },
           affectedNodeIds: cycle.slice(0, -1),
         });
 
