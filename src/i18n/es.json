@@ -67,7 +67,52 @@
       "path": "Ruta",
       "className": "Nombre de Clase",
       "entityType": "Tipo de Entidad",
-      "databaseType": "Tipo de Base de Datos"
+      "databaseType": "Tipo de Base de Datos",
+      "adapterType": "Tipo de Adaptador"
+    }
+  },
+  "inspector": {
+    "http": {
+      "title": "Configuración de Endpoint HTTP",
+      "description": "Configura el punto de entrada HTTP (interfaz tipo Postman)",
+      "httpMethod": "Método HTTP",
+      "path": "Ruta / Path",
+      "queryParameters": "Parámetros de Query",
+      "pathParameters": "Parámetros de Ruta",
+      "requestBody": "Cuerpo de Solicitud",
+      "response": "Respuesta",
+      "addParameter": "Agregar",
+      "noParameters": "Sin parámetros definidos",
+      "parameterName": "Nombre del parámetro",
+      "parameterDescription": "Descripción (opcional)",
+      "required": "Requerido",
+      "optional": "Opcional",
+      "bodyType": "Tipo de Cuerpo",
+      "bodyDescription": "Descripción del Cuerpo",
+      "bodyDescriptionPlaceholder": "Describe el cuerpo de la solicitud",
+      "responseType": "Tipo de Respuesta",
+      "responseDescription": "Descripción de Respuesta",
+      "responseDescriptionPlaceholder": "Describe la respuesta"
+    },
+    "structural": {
+      "title": "Definición Estructural",
+      "description": "Define la estructura de clase/interfaz con firmas de métodos",
+      "className": "Nombre de Clase",
+      "interfaceName": "Nombre de Interfaz",
+      "methods": "Métodos",
+      "addMethod": "Agregar Método",
+      "noMethods": "Sin métodos definidos. Agrega métodos para definir la estructura del componente.",
+      "methodName": "Nombre del Método",
+      "parameters": "Parámetros",
+      "addParameter": "Agregar",
+      "noParameters": "Sin parámetros",
+      "paramName": "Nombre",
+      "returnType": "Tipo de Retorno",
+      "methodDescription": "Descripción del Método",
+      "methodDescriptionPlaceholder": "Describe qué hace este método",
+      "deleteMethod": "Eliminar Método",
+      "noteTitle": "Nota",
+      "noteDescription": "BackArch solo genera definiciones estructurales. Las implementaciones de métodos las agregarás tú en tu proyecto real."
     }
   },
   "footer": {

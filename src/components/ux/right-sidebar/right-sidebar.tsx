@@ -1,9 +1,9 @@
 /**
  * Right Sidebar Component - Node Inspector
  *
- * Displays and allows editing of the selected node's properties.
- * Shows different fields based on the node type.
- * Changes trigger graph updates and validation.
+ * Architecture-aware inspector that adapts to the selected node type.
+ * Displays HTTP configuration (Postman-like) for endpoints and adapters,
+ * or structural configuration (class/interface definitions) for services and repositories.
  */
 
 import {
@@ -25,6 +25,8 @@ import { useAppStore } from '@/store/app.store';
 import { t } from '@/i18n/index.i18n';
 import type { BANode, NodeType } from '@/core/engine/types/graph/index.graph';
 import { getComponentDefinition } from '@/core/catalog/index.catalog';
+import { HttpInspector } from './http-inspector';
+import { StructuralInspector } from './structural-inspector';
 
 const { Sider: RightSider } = Layout;
 const { Title, Text } = Typography;
@@ -61,7 +63,7 @@ const NodeTypeBadge = ({ type }: { type: NodeType }) => {
 };
 
 /**
- * Common node fields (label, description)
+ * Common node fields (name, description, metadata)
  */
 interface CommonFieldsProps {
   node: BANode;
@@ -106,93 +108,26 @@ const CommonFields = ({ node, onUpdate }: CommonFieldsProps) => (
 );
 
 /**
- * Endpoint-specific fields
+ * Determine which inspector paradigm to use for a node type
  */
-const EndpointFields = ({ node, onUpdate }: CommonFieldsProps) => {
-  const httpMethods = ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'] as const;
+const getInspectorType = (node: BANode): 'http' | 'structural' | 'database' | 'simple' => {
+  // HTTP paradigm: endpoints and HTTP adapters
+  if (node.type === 'endpoint') return 'http';
+  if (node.type === 'driving-adapter' && node.metadata?.adapterType === 'http') return 'http';
 
-  return (
-    <>
-      <Form.Item label={t('rightsidebar.fields.httpMethod')}>
-        <Select
-          value={node.metadata?.httpMethod ?? 'GET'}
-          onChange={(value) =>
-            onUpdate({
-              metadata: { ...node.metadata, httpMethod: value },
-            })
-          }
-        >
-          {httpMethods.map((method) => (
-            <Select.Option key={method} value={method}>
-              <Tag
-                color={
-                  method === 'GET'
-                    ? 'green'
-                    : method === 'POST'
-                      ? 'blue'
-                      : method === 'PUT'
-                        ? 'orange'
-                        : method === 'DELETE'
-                          ? 'red'
-                          : 'purple'
-                }
-              >
-                {method}
-              </Tag>
-            </Select.Option>
-          ))}
-        </Select>
-      </Form.Item>
+  // Structural paradigm: services, repositories, ports, domain
+  if (
+    ['service', 'repository', 'driving-port', 'driven-port', 'domain'].includes(node.type)
+  ) {
+    return 'structural';
+  }
 
-      <Form.Item label={t('rightsidebar.fields.path')}>
-        <Input
-          value={node.metadata?.path ?? ''}
-          onChange={(e) =>
-            onUpdate({
-              metadata: { ...node.metadata, path: (e.target as HTMLInputElement).value },
-            })
-          }
-          placeholder='/api/example'
-          addonBefore='/'
-        />
-      </Form.Item>
-    </>
-  );
+  // Database: simple configuration
+  if (node.type === 'database') return 'database';
+
+  // Other adapters: simple configuration
+  return 'simple';
 };
-
-/**
- * Service-specific fields
- */
-const ServiceFields = ({ node, onUpdate }: CommonFieldsProps) => (
-  <Form.Item label={t('rightsidebar.fields.className')}>
-    <Input
-      value={node.metadata?.className ?? ''}
-      onChange={(e) =>
-        onUpdate({
-          metadata: { ...node.metadata, className: (e.target as HTMLInputElement).value },
-        })
-      }
-      placeholder='UserService'
-    />
-  </Form.Item>
-);
-
-/**
- * Repository-specific fields
- */
-const RepositoryFields = ({ node, onUpdate }: CommonFieldsProps) => (
-  <Form.Item label={t('rightsidebar.fields.entityType')}>
-    <Input
-      value={node.metadata?.entityType ?? ''}
-      onChange={(e) =>
-        onUpdate({
-          metadata: { ...node.metadata, entityType: (e.target as HTMLInputElement).value },
-        })
-      }
-      placeholder='User'
-    />
-  </Form.Item>
-);
 
 /**
  * Database-specific fields
@@ -221,18 +156,46 @@ const DatabaseFields = ({ node, onUpdate }: CommonFieldsProps) => {
 };
 
 /**
- * Type-specific fields based on node type
+ * Simple adapter fields (for non-HTTP adapters)
  */
-const TypeSpecificFields = ({ node, onUpdate }: CommonFieldsProps) => {
-  switch (node.type) {
-    case 'endpoint':
-      return <EndpointFields node={node} onUpdate={onUpdate} />;
-    case 'service':
-      return <ServiceFields node={node} onUpdate={onUpdate} />;
-    case 'repository':
-      return <RepositoryFields node={node} onUpdate={onUpdate} />;
+const AdapterFields = ({ node, onUpdate }: CommonFieldsProps) => {
+  const adapterTypes = ['grpc', 'cli', 'event', 'database', 'external-api', 'message-queue'] as const;
+
+  return (
+    <Form.Item label={t('rightsidebar.fields.adapterType')}>
+      <Select
+        value={node.metadata?.adapterType ?? 'database'}
+        onChange={(value) =>
+          onUpdate({
+            metadata: { ...node.metadata, adapterType: value },
+          })
+        }
+      >
+        {adapterTypes.map((type) => (
+          <Select.Option key={type} value={type}>
+            {type.charAt(0).toUpperCase() + type.slice(1).replace(/-/g, ' ')}
+          </Select.Option>
+        ))}
+      </Select>
+    </Form.Item>
+  );
+};
+
+/**
+ * Type-specific inspector based on node type
+ */
+const TypeSpecificInspector = ({ node, onUpdate }: CommonFieldsProps) => {
+  const inspectorType = getInspectorType(node);
+
+  switch (inspectorType) {
+    case 'http':
+      return <HttpInspector node={node} onUpdate={onUpdate} />;
+    case 'structural':
+      return <StructuralInspector node={node} onUpdate={onUpdate} />;
     case 'database':
       return <DatabaseFields node={node} onUpdate={onUpdate} />;
+    case 'simple':
+      return node.type === 'driven-adapter' ? <AdapterFields node={node} onUpdate={onUpdate} /> : null;
     default:
       return null;
   }
@@ -281,15 +244,12 @@ const NodeInspector = ({ node }: { node: BANode }) => {
 
       <Form layout='vertical' size='small'>
         <CommonFields node={node} onUpdate={handleUpdate} />
-
-        <Divider />
-
-        <Title level={5} className='ba-type-section__title'>
-          {t('rightsidebar.typeSpecificTitle')}
-        </Title>
-
-        <TypeSpecificFields node={node} onUpdate={handleUpdate} />
       </Form>
+
+      <Divider />
+
+      {/* Type-specific inspector (HTTP or Structural) */}
+      <TypeSpecificInspector node={node} onUpdate={handleUpdate} />
 
       <Divider />
 

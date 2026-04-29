@@ -39,15 +39,76 @@ export type NodeType =
   | 'driven-adapter';
 
 /**
+ * Primitive types allowed in method signatures and HTTP configurations
+ */
+export type PrimitiveType = 'string' | 'number' | 'boolean' | 'void';
+
+/**
+ * HTTP parameter definition (query or path parameter)
+ */
+export interface HttpParameter {
+  id: string;
+  name: string;
+  type: PrimitiveType;
+  required: boolean;
+  description?: string;
+}
+
+/**
+ * HTTP request body definition
+ */
+export interface HttpRequestBody {
+  type: PrimitiveType;
+  description?: string;
+}
+
+/**
+ * HTTP response definition
+ */
+export interface HttpResponse {
+  type: PrimitiveType;
+  description?: string;
+}
+
+/**
+ * Method parameter definition for structural components
+ */
+export interface MethodParameter {
+  id: string;
+  name: string;
+  type: PrimitiveType;
+}
+
+/**
+ * Method signature definition
+ * Only signatures - no implementations
+ */
+export interface MethodSignature {
+  id: string;
+  name: string;
+  parameters: MethodParameter[];
+  returnType: PrimitiveType;
+  description?: string;
+}
+
+/**
  * Node metadata for architecture-specific configurations
  */
 export interface NodeMetadata {
-  // Endpoint-specific
+  // === HTTP Endpoint Configuration (Postman-like) ===
+  // Used by: endpoint, driving-adapter (when adapterType is 'http')
   httpMethod?: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
   path?: string;
+  queryParams?: HttpParameter[];
+  pathParams?: HttpParameter[];
+  requestBody?: HttpRequestBody;
+  response?: HttpResponse;
 
-  // Service-specific
+  // === Structural Code Configuration (Class/Interface) ===
+  // Used by: service, repository, driving-port, driven-port, domain
   className?: string;
+  interfaceName?: string;
+  methods?: MethodSignature[];
 
   // Repository-specific
   entityType?: string;
@@ -58,7 +119,7 @@ export interface NodeMetadata {
   // Hexagonal - Adapter specific
   adapterType?: 'http' | 'grpc' | 'cli' | 'event' | 'database' | 'external-api' | 'message-queue';
   
-  // Hexagonal - Port specific
+  // Hexagonal - Port specific (legacy - use interfaceName instead)
   portInterface?: string;
   
   // Hexagonal - Domain specific

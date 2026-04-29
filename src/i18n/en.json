@@ -67,7 +67,52 @@
       "path": "Path",
       "className": "Class Name",
       "entityType": "Entity Type",
-      "databaseType": "Database Type"
+      "databaseType": "Database Type",
+      "adapterType": "Adapter Type"
+    }
+  },
+  "inspector": {
+    "http": {
+      "title": "HTTP Endpoint Configuration",
+      "description": "Configure the HTTP entry point (Postman-like interface)",
+      "httpMethod": "HTTP Method",
+      "path": "Path / Route",
+      "queryParameters": "Query Parameters",
+      "pathParameters": "Path Parameters",
+      "requestBody": "Request Body",
+      "response": "Response",
+      "addParameter": "Add",
+      "noParameters": "No parameters defined",
+      "parameterName": "Parameter name",
+      "parameterDescription": "Description (optional)",
+      "required": "Required",
+      "optional": "Optional",
+      "bodyType": "Body Type",
+      "bodyDescription": "Body Description",
+      "bodyDescriptionPlaceholder": "Describe the request body",
+      "responseType": "Response Type",
+      "responseDescription": "Response Description",
+      "responseDescriptionPlaceholder": "Describe the response"
+    },
+    "structural": {
+      "title": "Structural Definition",
+      "description": "Define class/interface structure with method signatures",
+      "className": "Class Name",
+      "interfaceName": "Interface Name",
+      "methods": "Methods",
+      "addMethod": "Add Method",
+      "noMethods": "No methods defined. Add methods to define the component structure.",
+      "methodName": "Method Name",
+      "parameters": "Parameters",
+      "addParameter": "Add",
+      "noParameters": "No parameters",
+      "paramName": "Name",
+      "returnType": "Return Type",
+      "methodDescription": "Method Description",
+      "methodDescriptionPlaceholder": "Describe what this method does",
+      "deleteMethod": "Delete Method",
+      "noteTitle": "Note",
+      "noteDescription": "BackArch only generates structural definitions. Method implementations will be added by you in your real project."
     }
   },
   "footer": {
