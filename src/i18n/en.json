@@ -13,9 +13,25 @@
       "placeholder": "Select architecture"
     },
     "generate": "Generate",
+    "settings": {
+      "label": "Settings",
+      "title": "Project Settings",
+      "projectName": "Project Name",
+      "projectNamePlaceholder": "my-awesome-api",
+      "basePackage": "Base Package",
+      "basePackagePlaceholder": "com.example.app"
+    },
     "popover": {
       "seeMoreDetails": "See more details →"
     }
+  },
+  "generate": {
+    "missingConfig": "Configure stack, architecture, project name and base package first.",
+    "hasErrors": "Resolve validation errors before generating.",
+    "emptyGraph": "Add at least one component to generate the project.",
+    "unsupported": "This stack/architecture combination is not supported yet.",
+    "failed": "Generation failed. Check the console.",
+    "success": "Project generated. Your download is starting."
   },
   "stacks": {
     "spring_boot": {
@@ -39,6 +55,8 @@
     "title": "Components",
     "helpText": "Drag components to the canvas to design your backend architecture",
     "selectConfiguration": "Select a configuration in the header to view the available components",
+    "emptyMessage": "Select a stack and architecture above to see components",
+    "dragHint": "Drag components onto the canvas",
     "componentTypes": {
       "endpoint": "Endpoint",
       "service": "Service",
@@ -72,6 +90,16 @@
     }
   },
   "inspector": {
+    "title": "Inspector",
+    "label": "Label",
+    "delete": "Delete Component",
+    "emptyMessage": "Select a component on the canvas to inspect",
+    "database": {
+      "type": "Database Type"
+    },
+    "adapter": {
+      "type": "Adapter Type"
+    },
     "http": {
       "title": "HTTP Endpoint Configuration",
       "description": "Configure the HTTP entry point (Postman-like interface)",
@@ -128,7 +156,11 @@
   },
   "canvas": {
     "selectConfiguration": "Configure your project to start designing",
-    "configurationHint": "Select a stack, version, and architecture style in the header"
+    "configurationHint": "Select a stack, version, and architecture style in the header",
+    "emptyTitle": "No components yet",
+    "emptyHint": "Drag components from the sidebar to get started",
+    "configureFirst": "Configure your project first",
+    "configureHint": "Select a stack, version, and architecture above"
   },
   "validation": {
     "or": "or",

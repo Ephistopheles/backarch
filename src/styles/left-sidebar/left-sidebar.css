@@ -1,71 +1,72 @@
-.ba-left-sidebar {
-  padding: 16px 12px;
-  overflow-y: auto;
-  border-right: 1px solid var(--ant-color-border);
-  background: var(--ant-color-bg-layout);
-}
+/* ===================================================================
+   Left Sidebar — complement-only CSS.
+   Layout.Sider (desktop) and Drawer (mobile) are the structural owners.
+   =================================================================== */
 
 .ba-left-sidebar__header {
-  padding-bottom: 12px;
-  border-bottom: 1px solid var(--ant-color-border);
-  margin-bottom: 16px;
+  padding: 16px 16px 12px;
+  border-bottom: 1px solid var(--ba-color-border);
 }
 
 .ba-left-sidebar__title {
   margin: 0;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 600;
   text-transform: uppercase;
-  color: var(--ant-color-text-tertiary);
+  color: var(--ba-color-text-secondary);
   letter-spacing: 0.5px;
-  white-space: nowrap;
+}
+
+.ba-left-sidebar__body {
+  padding: 12px;
 }
 
 .ba-left-sidebar__footer {
-  margin-top: 16px;
-  padding: 12px;
-  border-top: 1px solid var(--ant-color-border);
+  padding: 10px 16px;
+  border-top: 1px solid var(--ba-color-border);
 }
 
 .ba-left-sidebar__help-text {
-  font-size: 12px;
+  font-size: 11px;
   text-align: center;
   display: block;
+  color: var(--ba-color-text-secondary);
 }
 
-/* Component item styles */
+/* Component item */
 .ba-component-item {
   margin-bottom: 8px;
   border-radius: 8px;
+  transition: box-shadow var(--ba-transition), border-color var(--ba-transition);
 }
 
 .ba-component-item--draggable {
   cursor: grab;
 }
+.ba-component-item--draggable:active {
+  cursor: grabbing;
+}
 
 .ba-component-item--disabled {
   cursor: not-allowed;
-  opacity: 0.5;
+  opacity: 0.45;
 }
 
 .ba-component-item__icon-wrapper {
   width: 32px;
   height: 32px;
   border-radius: 6px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  flex-shrink: 0;
 }
 
 .ba-component-item__label {
-  font-size: 14px;
+  font-size: 13px;
 }
 
 /* Empty state */
 .ba-empty-catalog {
-  margin-top: 60px;
+  margin-top: 48px;
 }
-
 .ba-empty-catalog__text {
-  font-size: 13px;
+  font-size: 12px;
 }

@@ -1,15 +1,21 @@
+/* ===================================================================
+   Footer — Validation & Feedback.
+   Ant Design Flex is the structural owner.
+   CSS is complement-only polish.
+   =================================================================== */
+
 .ba-footer {
-  display: flex;
-  flex-direction: column;
-  border-top: 1px solid var(--ant-color-border);
-  min-height: 200px;
-  max-height: 200px;
+  border-top: 1px solid var(--ba-color-border);
+  height: var(--ba-footer-height);
+  max-height: var(--ba-footer-height);
+  overflow: hidden;
 }
 
 .ba-footer__header {
-  padding: 12px 20px;
-  border-bottom: 1px solid var(--ant-color-border);
-  background: var(--ant-color-bg-layout);
+  flex-shrink: 0;
+  padding: 10px 20px;
+  border-bottom: 1px solid var(--ba-color-border);
+  background: var(--ba-color-bg);
 }
 
 .ba-footer__title {
@@ -23,12 +29,14 @@
 }
 
 .ba-footer__content {
-  flex: 1;
+  flex: 1 1 0%;
   overflow-y: auto;
 }
 
 .ba-footer__content--empty {
-  padding: 8px 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .ba-footer__success {
@@ -36,13 +44,13 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 24px;
+  padding: 20px;
   color: var(--ant-color-success);
 }
 
 .ba-footer__success-icon {
-  font-size: 32px;
-  margin-bottom: 8px;
+  font-size: 28px;
+  margin-bottom: 6px;
 }
 
 .ba-footer__success-text {
@@ -50,29 +58,41 @@
   color: var(--ant-color-success);
 }
 
-/* Validation item styles */
+/* Validation items */
 .ba-validation-item {
-  padding: 10px 20px;
-  border-bottom: 1px solid var(--ant-color-border-secondary);
-  transition: background 0.3s;
+  padding: 8px 20px;
+  border-bottom: 1px solid var(--ba-color-border-light);
+  transition: background var(--ba-transition);
 }
-
 .ba-validation-item--clickable {
   cursor: pointer;
 }
-
+.ba-validation-item--clickable:hover {
+  background: var(--ba-color-bg);
+}
 .ba-validation-item--error {
   background: #fff1f0;
 }
-
 .ba-validation-item--warning {
   background: #fffbe6;
 }
-
 .ba-validation-item--info {
   background: #e6f7ff;
 }
-
 .ba-validation-item__message {
-  font-size: 13px;
+  font-size: 12px;
+}
+
+/* Responsive */
+@media (max-width: 576px) {
+  .ba-footer {
+    height: 140px;
+    max-height: 140px;
+  }
+  .ba-footer__header {
+    padding: 8px 12px;
+  }
+  .ba-validation-item {
+    padding: 6px 12px;
+  }
 }

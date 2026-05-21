@@ -1,17 +1,33 @@
+/* ===================================================================
+   App Shell — Ant Design Layout as primary structure.
+   CSS here is complementary polish only.
+   =================================================================== */
+
 .ba-app {
   height: 100vh;
   width: 100vw;
   overflow: hidden;
 }
 
-.ba-app__main {
-  flex: 1;
-  overflow: hidden;
+/* Header wrapper — reset Ant Design Layout.Header defaults */
+.ba-header-wrapper {
+  height: auto !important;
+  padding: 0 !important;
+  line-height: normal !important;
 }
 
-.ba-app__canvas-wrapper {
-  width: 100%;
-  height: 100%;
-  border-radius: 8px;
-  overflow: hidden;
+/* Footer wrapper — reset Ant Design Layout.Footer defaults */
+.ba-footer-wrapper {
+  padding: 0 !important;
+}
+
+/* Sider overrides */
+.ba-left-sider,
+.ba-right-sider {
+  border-inline-end: 1px solid var(--ba-color-border-light);
+}
+
+.ba-right-sider {
+  border-inline-start: 1px solid var(--ba-color-border-light);
+  border-inline-end: none;
 }

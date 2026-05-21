@@ -1,7 +1,19 @@
+/* ===================================================================
+   BASelect — UI Select overrides
+   =================================================================== */
+
 .ba-select {
-  min-width: 210px;
+  min-width: 160px;
 }
 
-.ba-select__popover-content {
-  max-width: 260px;
+@media (max-width: 1200px) {
+  .ba-select {
+    min-width: 130px;
+  }
+}
+
+@media (max-width: 576px) {
+  .ba-select {
+    min-width: 100px;
+  }
 }

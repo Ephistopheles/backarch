@@ -1,16 +1,38 @@
-* {
+/* ===================================================================
+   Global Resets & Font Faces
+   =================================================================== */
+
+*,
+*::before,
+*::after {
   box-sizing: border-box;
-  user-select: none;
 }
 
 html,
-body {
+body,
+#app {
   height: 100%;
   width: 100%;
   margin: 0;
   padding: 0;
+  overflow: hidden;
   font-family: 'SpaceGrotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }
+
+/* Disable text selection globally — re-enable on form inputs */
+body {
+  user-select: none;
+}
+
+input,
+textarea,
+[contenteditable] {
+  user-select: text;
+}
+
+/* ===================================================================
+   Font Faces
+   =================================================================== */
 
 @font-face {
   font-family: 'SpaceGrotesk';
@@ -44,20 +66,45 @@ body {
   font-display: swap;
 }
 
-:root {
-  /* === Primary Palette === */
-  --color-primary-indigo: #4f46e5;
-  --color-primary-lavender: #e0e7ff;
-  --color-primary-light-bg: #f5f7fa;
-  --color-primary-dark-text: #1f2937;
-  --color-primary-accent-blue: #3b82f6;
-  --color-primary-soft-red: #ef4444;
-  --color-primary-soft-green: #22c55e;
+/* ===================================================================
+   Design tokens
+   =================================================================== */
 
-  /* === Auxiliary Palette === */
-  --color-black: #000000;
-  --color-black-15: #00000026;
-  --color-black-40: #00000066;
-  --color-black-60: #00000099;
-  --color-white: #ffffff;
+:root {
+  /* Primary palette */
+  --ba-color-primary: #4f46e5;
+  --ba-color-primary-light: #e0e7ff;
+  --ba-color-bg: #f5f7fa;
+  --ba-color-surface: #ffffff;
+  --ba-color-text: #1f2937;
+  --ba-color-text-secondary: #6b7280;
+  --ba-color-border: #e5e7eb;
+  --ba-color-border-light: #f3f4f6;
+
+  /* Layout sizing */
+  --ba-header-height: 64px;
+  --ba-footer-height: 180px;
+  --ba-sider-width: 240px;
+  --ba-inspector-width: 280px;
+
+  /* Transitions */
+  --ba-transition: 0.2s ease;
+}
+
+/* ===================================================================
+   Shared scrollbar (thin, subtle)
+   =================================================================== */
+
+.ba-scrollable::-webkit-scrollbar {
+  width: 5px;
+}
+.ba-scrollable::-webkit-scrollbar-track {
+  background: transparent;
+}
+.ba-scrollable::-webkit-scrollbar-thumb {
+  background: #d9d9d9;
+  border-radius: 3px;
+}
+.ba-scrollable::-webkit-scrollbar-thumb:hover {
+  background: #bfbfbf;
 }

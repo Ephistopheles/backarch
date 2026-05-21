@@ -1,147 +1,162 @@
 /**
- * Left Sidebar Component
+ * Left Sidebar — Component Catalog
  *
- * Displays the component catalog based on the selected architecture.
- * Components can be dragged onto the canvas to create nodes.
- * The catalog dynamically updates when the architecture changes.
+ * Desktop: Ant Design Layout.Sider.
+ * Mobile / Tablet: Ant Design Drawer.
+ * Content uses Flex, Space, Card for structure.
  */
 
-import { Layout, Typography, Space, Card, Image, Empty, Flex } from 'antd';
+import { useCallback, useMemo } from 'preact/hooks';
+import { Layout, Drawer, Card, Typography, Image, Flex, Space, Empty } from 'antd';
+import { AppstoreOutlined } from '@ant-design/icons';
+
 import { useAppStore } from '@/store/app.store';
-import { t, type TranslationKey } from '@/i18n/index.i18n';
-import type { NodeType } from '@/core/engine/types/graph/index.graph';
-import {
-  getCatalogByArchitecture,
-  type CatalogComponent,
-} from '@/core/catalog/index.catalog';
+import { getCatalogByArchitecture, type CatalogComponent } from '@/core/catalog/index.catalog';
+import { t } from '@/i18n/index.i18n';
 
-const { Sider: LeftSider } = Layout;
-const { Title, Text } = Typography;
+import '@/styles/left-sidebar/left-sidebar.css';
 
-interface ComponentItemProps {
-  type: NodeType;
-  labelKey: TranslationKey;
-  icon: string;
-  bgColor: string;
-  disabled?: boolean;
+const { Text } = Typography;
+const { Sider } = Layout;
+
+interface LeftSidebarProps {
+  isDesktop: boolean;
 }
 
-/**
- * Individual draggable component item
- */
+/* ------------------------------------------------------------------ */
+/*  Draggable component card                                          */
+/* ------------------------------------------------------------------ */
+
 const ComponentItem = ({
-  type,
-  labelKey,
-  icon,
-  bgColor,
-  disabled = false,
-}: ComponentItemProps) => {
-  const onDragStart = (event: DragEvent) => {
-    if (disabled || !event.dataTransfer) {
-      event.preventDefault();
-      return;
-    }
-    event.dataTransfer.setData('application/backarch-node', type);
-    event.dataTransfer.effectAllowed = 'move';
-  };
+  component,
+  disabled,
+}: {
+  component: CatalogComponent;
+  disabled: boolean;
+}) => {
+  const handleDragStart = useCallback(
+    (e: DragEvent) => {
+      if (disabled) {
+        e.preventDefault();
+        return;
+      }
+      e.dataTransfer?.setData('application/backarch-node', component.type);
+      if (e.dataTransfer) e.dataTransfer.effectAllowed = 'move';
+    },
+    [component.type, disabled]
+  );
+
+  const iconStyle = useMemo(() => ({ background: component.bgColor }), [component.bgColor]);
 
   return (
     <Card
       size='small'
-      hoverable={!disabled}
       className={`ba-component-item ${disabled ? 'ba-component-item--disabled' : 'ba-component-item--draggable'}`}
       draggable={!disabled}
-      onDragStart={onDragStart}
+      onDragStart={handleDragStart as any}
+      hoverable={!disabled}
     >
-      <Space size='middle'>
+      <Space size={10}>
         <Flex
           align='center'
           justify='center'
           className='ba-component-item__icon-wrapper'
-          style={{ background: bgColor }}
+          style={iconStyle}
         >
-          <Image
-            src={icon}
-            alt={String(labelKey)}
-            preview={false}
-            draggable={false}
-            width={20}
-            height={20}
-          />
+          <Image src={component.icon} alt={component.type} preview={false} width={16} height={16} />
         </Flex>
-        <Text strong className='ba-component-item__label'>
-          {t(labelKey)}
-        </Text>
+        <Text className='ba-component-item__label'>{t(component.labelKey)}</Text>
       </Space>
     </Card>
   );
 };
 
-/**
- * Empty state when no architecture is selected
- */
-const EmptyCatalog = () => {
-  useAppStore((s) => s.language);
+/* ------------------------------------------------------------------ */
+/*  Sidebar inner content (shared between Sider & Drawer)             */
+/* ------------------------------------------------------------------ */
 
-  return (
-    <Empty
-      image={Empty.PRESENTED_IMAGE_SIMPLE}
-      description={
-        <Text type='secondary' className='ba-empty-catalog__text'>
-          {t('leftsidebar.selectConfiguration')}
-        </Text>
-      }
-      className='ba-empty-catalog'
-    />
-  );
-};
-
-/**
- * Component catalog list
- */
-const CatalogList = ({ components }: { components: CatalogComponent[] }) => (
-  <Flex vertical>
-    {components.map((component) => (
-      <ComponentItem
-        key={component.type}
-        type={component.type}
-        labelKey={component.labelKey}
-        icon={component.icon}
-        bgColor={component.bgColor}
-      />
-    ))}
-  </Flex>
-);
-
-const LeftSidebar = () => {
-  useAppStore((s) => s.language);
+const SidebarContent = () => {
   const selectedArchitecture = useAppStore((s) => s.selectedArchitecture);
-  const isConfigComplete = useAppStore((s) => s.isConfigurationComplete());
+  const selectedStack = useAppStore((s) => s.selectedStack);
+  const selectedVersion = useAppStore((s) => s.selectedVersion);
 
-  const catalogComponents = getCatalogByArchitecture(selectedArchitecture);
-  const hasCatalog = catalogComponents.length > 0 && isConfigComplete;
+  const configComplete = !!(selectedStack && selectedVersion && selectedArchitecture);
+
+  const components: CatalogComponent[] = useMemo(
+    () => (selectedArchitecture ? getCatalogByArchitecture(selectedArchitecture) : []),
+    [selectedArchitecture]
+  );
 
   return (
-    <LeftSider width={240} className='ba-left-sidebar'>
-      <Flex vertical className='ba-left-sidebar__header'>
-        <Title level={5} className='ba-left-sidebar__title'>
-          {t('leftsidebar.title')}
-        </Title>
+    <Flex vertical style={{ height: '100%', overflow: 'hidden' }}>
+      {/* Header */}
+      <Flex align='center' gap={6} className='ba-left-sidebar__header'>
+        <AppstoreOutlined style={{ fontSize: 13, color: 'var(--ba-color-text-secondary)' }} />
+        <Text className='ba-left-sidebar__title'>{t('leftsidebar.title')}</Text>
       </Flex>
 
-      {hasCatalog ? (
-        <CatalogList components={catalogComponents} />
-      ) : (
-        <EmptyCatalog />
+      {/* Body — scrollable */}
+      <Flex vertical className='ba-left-sidebar__body ba-scrollable' style={{ flex: 1, overflowY: 'auto' }}>
+        {components.length === 0 ? (
+          <Empty
+            className='ba-empty-catalog'
+            image={Empty.PRESENTED_IMAGE_SIMPLE}
+            description={
+              <Text type='secondary' className='ba-empty-catalog__text'>
+                {t('leftsidebar.emptyMessage')}
+              </Text>
+            }
+          />
+        ) : (
+          components.map((comp) => (
+            <ComponentItem key={comp.type} component={comp} disabled={!configComplete} />
+          ))
+        )}
+      </Flex>
+
+      {/* Footer hint */}
+      {configComplete && components.length > 0 && (
+        <Flex justify='center' className='ba-left-sidebar__footer'>
+          <Text type='secondary' className='ba-left-sidebar__help-text'>
+            {t('leftsidebar.dragHint')}
+          </Text>
+        </Flex>
       )}
-
-      <Flex vertical className='ba-left-sidebar__footer'>
-        <Text type='secondary' className='ba-left-sidebar__help-text'>
-          {hasCatalog ? t('leftsidebar.helpText') : ''}
-        </Text>
-      </Flex>
-    </LeftSider>
+    </Flex>
   );
 };
 
-export default LeftSidebar;
+/* ------------------------------------------------------------------ */
+/*  Exported wrapper                                                  */
+/* ------------------------------------------------------------------ */
+
+const SIDER_STYLE = { overflow: 'hidden' };
+const DRAWER_BODY_STYLE = { body: { padding: 0 } };
+
+export default function LeftSidebar({ isDesktop }: LeftSidebarProps) {
+  const open = useAppStore((s) => s.leftDrawerOpen);
+  const setOpen = useAppStore((s) => s.setLeftDrawerOpen);
+
+  const handleClose = useCallback(() => setOpen(false), [setOpen]);
+
+  if (isDesktop) {
+    return (
+      <Sider width={240} theme='light' className='ba-left-sider' style={SIDER_STYLE}>
+        <SidebarContent />
+      </Sider>
+    );
+  }
+
+  return (
+    <Drawer
+      open={open}
+      onClose={handleClose}
+      placement='left'
+      width={260}
+      styles={DRAWER_BODY_STYLE}
+      destroyOnClose={false}
+    >
+      <SidebarContent />
+    </Drawer>
+  );
+}

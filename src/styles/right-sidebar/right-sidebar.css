@@ -1,23 +1,25 @@
-.ba-right-sidebar {
-  padding: 16px;
-  overflow-y: auto;
-  border-left: 1px solid var(--ant-color-border);
-}
+/* ===================================================================
+   Right Sidebar — Inspector panel.
+   Layout.Sider (desktop) and Drawer (mobile) are the structural owners.
+   CSS here is complement-only polish.
+   =================================================================== */
 
 .ba-right-sidebar__header {
-  padding-bottom: 12px;
-  border-bottom: 1px solid var(--ant-color-border);
-  margin-bottom: 16px;
+  padding: 16px 16px 12px;
+  border-bottom: 1px solid var(--ba-color-border);
 }
 
 .ba-right-sidebar__title {
   margin: 0;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 600;
   text-transform: uppercase;
-  color: var(--ant-color-text-tertiary);
+  color: var(--ba-color-text-secondary);
   letter-spacing: 0.5px;
-  white-space: nowrap;
+}
+
+.ba-right-sidebar__body {
+  padding: 16px;
 }
 
 /* Node type badge */
@@ -29,9 +31,6 @@
   width: 32px;
   height: 32px;
   border-radius: 6px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
 .ba-node-badge__label {
@@ -39,20 +38,8 @@
 }
 
 /* Form fields */
-.ba-form-item {
-  margin-bottom: 12px;
-}
-
 .ba-form-item__id {
   font-size: 11px;
-}
-
-/* Type specific section */
-.ba-type-section__title {
-  font-size: 12px;
-  margin-bottom: 12px;
-  color: var(--ant-color-text-secondary);
-  white-space: nowrap;
 }
 
 /* Delete button */
@@ -64,16 +51,14 @@
 
 /* Empty state */
 .ba-empty-inspector {
-  margin-top: 60px;
+  margin-top: 48px;
 }
-
 .ba-empty-inspector__text {
-  font-size: 13px;
+  font-size: 12px;
 }
 
-/* Inspector Components */
+/* === Inspector sub-components === */
 
-/* Parameter list styling */
 .ba-param-list {
   width: 100%;
 }
@@ -82,102 +67,34 @@
   background: #fafafa;
   border: 1px solid #e8e8e8;
   border-radius: 6px;
-  transition: all 0.2s ease;
+  transition: border-color var(--ba-transition), box-shadow var(--ba-transition);
 }
-
 .ba-param-card:hover {
   border-color: #40a9ff;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06);
 }
 
-/* Method card styling */
 .ba-method-card {
-  background: #ffffff;
+  background: var(--ba-color-surface);
   border: 1px solid #d9d9d9;
   border-radius: 6px;
-  transition: all 0.2s ease;
+  transition: border-color var(--ba-transition), box-shadow var(--ba-transition);
 }
-
 .ba-method-card:hover {
   border-color: #40a9ff;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
-/* Signature preview */
-.ba-method-card .ant-card-body > .ant-space > .ant-card-small {
-  margin-bottom: 8px;
-}
-
-/* Inspector section headers */
-.ba-inspector-section-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 12px;
-}
-
-/* Compact form items in inspectors */
-.ba-right-sidebar .ant-form-item-label {
+/* Compact form items */
+.ba-right-sidebar__body .ant-form-item-label {
   padding-bottom: 2px;
 }
-
-.ba-right-sidebar .ant-form-item-label > label {
+.ba-right-sidebar__body .ant-form-item-label > label {
   font-size: 12px;
   font-weight: 500;
 }
 
-/* Parameter input fields */
 .ba-param-card .ant-input,
 .ba-param-card .ant-select {
   font-size: 12px;
-}
-
-/* Method signature code block */
-.ba-method-signature {
-  font-family: 'Courier New', Courier, monospace;
-  font-size: 11px;
-  padding: 8px;
-  background: #f5f5f5;
-  border-radius: 4px;
-  word-break: break-all;
-}
-
-/* Info note styling */
-.ba-inspector-note {
-  background: #e6f7ff;
-  border: 1px solid #91d5ff;
-  padding: 12px;
-  border-radius: 6px;
-  margin-top: 12px;
-}
-
-.ba-inspector-note__title {
-  font-size: 12px;
-  color: #0050b3;
-  font-weight: 600;
-  margin-bottom: 4px;
-}
-
-.ba-inspector-note__text {
-  font-size: 11px;
-  color: #0050b3;
-  line-height: 1.4;
-}
-
-/* Scrollbar styling for inspector */
-.ba-right-sidebar::-webkit-scrollbar {
-  width: 6px;
-}
-
-.ba-right-sidebar::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.ba-right-sidebar::-webkit-scrollbar-thumb {
-  background: #d9d9d9;
-  border-radius: 3px;
-}
-
-.ba-right-sidebar::-webkit-scrollbar-thumb:hover {
-  background: #bfbfbf;
 }

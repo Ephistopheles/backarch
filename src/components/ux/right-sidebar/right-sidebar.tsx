@@ -1,286 +1,283 @@
 /**
- * Right Sidebar Component - Node Inspector
+ * Right Sidebar — Node Inspector
  *
- * Architecture-aware inspector that adapts to the selected node type.
- * Displays HTTP configuration (Postman-like) for endpoints and adapters,
- * or structural configuration (class/interface definitions) for services and repositories.
+ * Desktop: Ant Design Layout.Sider.
+ * Mobile / Tablet: Ant Design Drawer that opens on node selection.
+ * Memoized sub-components, stable callbacks, granular Zustand selectors.
  */
 
+import { useCallback, useMemo } from 'preact/hooks';
 import {
   Layout,
+  Drawer,
   Typography,
+  Flex,
   Space,
-  Empty,
+  Image,
+  Form,
   Input,
   Select,
-  Form,
-  Tag,
   Button,
+  Empty,
   Divider,
-  Image,
-  Flex,
 } from 'antd';
-import { DeleteOutlined } from '@ant-design/icons';
+import {
+  EyeOutlined,
+  DeleteOutlined,
+} from '@ant-design/icons';
+
 import { useAppStore } from '@/store/app.store';
-import { t } from '@/i18n/index.i18n';
-import type { BANode, NodeType } from '@/core/engine/types/graph/index.graph';
 import { getComponentDefinition } from '@/core/catalog/index.catalog';
+import { t } from '@/i18n/index.i18n';
+import type { BANode } from '@/core/engine/types/graph/index.graph';
 import { HttpInspector } from './http-inspector';
 import { StructuralInspector } from './structural-inspector';
 
-const { Sider: RightSider } = Layout;
-const { Title, Text } = Typography;
+import '@/styles/right-sidebar/right-sidebar.css';
 
-/**
- * Node type badge with icon
- */
-const NodeTypeBadge = ({ type }: { type: NodeType }) => {
-  const definition = getComponentDefinition(type);
+const { Text } = Typography;
+const { Sider } = Layout;
 
+interface RightSidebarProps {
+  isDesktop: boolean;
+}
+
+/* ------------------------------------------------------------------ */
+/*  Helpers                                                           */
+/* ------------------------------------------------------------------ */
+
+type InspectorType = 'http' | 'structural' | 'database' | 'simple';
+
+const getInspectorType = (node: BANode): InspectorType => {
+  if (node.type === 'endpoint') return 'http';
+  if (node.type === 'driving-adapter' && node.metadata?.adapterType === 'http') return 'http';
+  if (['service', 'repository', 'driving-port', 'driven-port', 'domain'].includes(node.type)) return 'structural';
+  if (node.type === 'database') return 'database';
+  return 'simple';
+};
+
+/* ------------------------------------------------------------------ */
+/*  Node type badge                                                   */
+/* ------------------------------------------------------------------ */
+
+const NodeTypeBadge = ({ node }: { node: BANode }) => {
+  const definition = getComponentDefinition(node.type);
   if (!definition) return null;
 
+  const iconStyle = useMemo(() => ({ background: definition.bgColor }), [definition.bgColor]);
+
   return (
-    <Space className='ba-node-badge'>
-      <Flex
-        align='center'
-        justify='center'
-        className='ba-node-badge__icon-wrapper'
-        style={{ background: definition.bgColor }}
-      >
-        <Image
-          src={definition.icon}
-          alt={type}
-          preview={false}
-          width={18}
-          height={18}
-        />
+    <Space size={10} className='ba-node-badge'>
+      <Flex align='center' justify='center' className='ba-node-badge__icon-wrapper' style={iconStyle}>
+        <Image src={definition.icon} alt={node.type} preview={false} width={18} height={18} />
       </Flex>
-      <Text strong className='ba-node-badge__label'>
-        {t(definition.labelKey)}
-      </Text>
+      <Flex vertical>
+        <Text strong>{node.label}</Text>
+        <Text type='secondary' className='ba-node-badge__label'>{node.type}</Text>
+      </Flex>
     </Space>
   );
 };
 
-/**
- * Common node fields (name, description, metadata)
- */
-interface CommonFieldsProps {
+/* ------------------------------------------------------------------ */
+/*  Common fields (label, adapter type for hex, etc.)                 */
+/* ------------------------------------------------------------------ */
+
+const CommonFields = ({
+  node,
+  onUpdate,
+}: {
   node: BANode;
   onUpdate: (updates: Partial<Omit<BANode, 'id'>>) => void;
-}
+}) => {
+  const handleLabelChange = useCallback(
+    (e: any) => onUpdate({ label: (e.target as HTMLInputElement).value }),
+    [onUpdate]
+  );
 
-const CommonFields = ({ node, onUpdate }: CommonFieldsProps) => (
-  <>
-    <Form.Item label={t('rightsidebar.fields.name')}>
-      <Input
-        value={node.label}
-        onChange={(e) => onUpdate({ label: (e.target as HTMLInputElement).value })}
-        placeholder={t('rightsidebar.fields.namePlaceholder')}
-      />
-    </Form.Item>
+  const handleDbTypeChange = useCallback(
+    (val: string) => onUpdate({ metadata: { ...node.metadata, databaseType: val as any } }),
+    [onUpdate, node.metadata]
+  );
 
-    <Form.Item label={t('rightsidebar.fields.description')}>
-      <Input.TextArea
-        value={node.metadata?.description ?? ''}
-        onChange={(e) =>
-          onUpdate({
-            metadata: { ...node.metadata, description: (e.target as HTMLTextAreaElement).value },
-          })
-        }
-        placeholder={t('rightsidebar.fields.descriptionPlaceholder')}
-        rows={2}
-      />
-    </Form.Item>
+  const handleAdapterTypeChange = useCallback(
+    (val: string) => onUpdate({ metadata: { ...node.metadata, adapterType: val as any } }),
+    [onUpdate, node.metadata]
+  );
 
-    <Form.Item label={t('rightsidebar.fields.id')}>
-      <Text code copyable className='ba-form-item__id'>
-        {node.id}
-      </Text>
-    </Form.Item>
-
-    {node.layer && (
-      <Form.Item label={t('rightsidebar.fields.layer')}>
-        <Tag color='blue'>{node.layer}</Tag>
+  return (
+    <Form layout='vertical' size='small'>
+      <Form.Item label={t('inspector.label')}>
+        <Input
+          value={node.label}
+          onChange={handleLabelChange}
+        />
       </Form.Item>
-    )}
-  </>
-);
 
-/**
- * Determine which inspector paradigm to use for a node type
- */
-const getInspectorType = (node: BANode): 'http' | 'structural' | 'database' | 'simple' => {
-  // HTTP paradigm: endpoints and HTTP adapters
-  if (node.type === 'endpoint') return 'http';
-  if (node.type === 'driving-adapter' && node.metadata?.adapterType === 'http') return 'http';
+      {node.type === 'database' && (
+        <Form.Item label={t('inspector.database.type')}>
+          <Select value={node.metadata?.databaseType || 'postgresql'} onChange={handleDbTypeChange}>
+            <Select.Option value='postgresql'>PostgreSQL</Select.Option>
+            <Select.Option value='mysql'>MySQL</Select.Option>
+            <Select.Option value='mongodb'>MongoDB</Select.Option>
+          </Select>
+        </Form.Item>
+      )}
 
-  // Structural paradigm: services, repositories, ports, domain
-  if (
-    ['service', 'repository', 'driving-port', 'driven-port', 'domain'].includes(node.type)
-  ) {
-    return 'structural';
-  }
+      {(node.type === 'driving-adapter' || node.type === 'driven-adapter') && (
+        <Form.Item label={t('inspector.adapter.type')}>
+          <Select value={node.metadata?.adapterType || 'http'} onChange={handleAdapterTypeChange}>
+            <Select.Option value='http'>HTTP</Select.Option>
+            <Select.Option value='grpc'>gRPC</Select.Option>
+            <Select.Option value='cli'>CLI</Select.Option>
+            <Select.Option value='event'>Event</Select.Option>
+            <Select.Option value='database'>Database</Select.Option>
+            <Select.Option value='external-api'>External API</Select.Option>
+            <Select.Option value='message-queue'>Message Queue</Select.Option>
+          </Select>
+        </Form.Item>
+      )}
 
-  // Database: simple configuration
-  if (node.type === 'database') return 'database';
-
-  // Other adapters: simple configuration
-  return 'simple';
-};
-
-/**
- * Database-specific fields
- */
-const DatabaseFields = ({ node, onUpdate }: CommonFieldsProps) => {
-  const databaseTypes = ['postgresql', 'mysql', 'mongodb'] as const;
-
-  return (
-    <Form.Item label={t('rightsidebar.fields.databaseType')}>
-      <Select
-        value={node.metadata?.databaseType ?? 'postgresql'}
-        onChange={(value) =>
-          onUpdate({
-            metadata: { ...node.metadata, databaseType: value },
-          })
-        }
-      >
-        {databaseTypes.map((dbType) => (
-          <Select.Option key={dbType} value={dbType}>
-            {dbType.charAt(0).toUpperCase() + dbType.slice(1)}
-          </Select.Option>
-        ))}
-      </Select>
-    </Form.Item>
+      <Form.Item label='ID'>
+        <Text type='secondary' className='ba-form-item__id' copyable>{node.id}</Text>
+      </Form.Item>
+    </Form>
   );
 };
 
-/**
- * Simple adapter fields (for non-HTTP adapters)
- */
-const AdapterFields = ({ node, onUpdate }: CommonFieldsProps) => {
-  const adapterTypes = ['grpc', 'cli', 'event', 'database', 'external-api', 'message-queue'] as const;
+/* ------------------------------------------------------------------ */
+/*  Type-specific inspector dispatch                                  */
+/* ------------------------------------------------------------------ */
 
-  return (
-    <Form.Item label={t('rightsidebar.fields.adapterType')}>
-      <Select
-        value={node.metadata?.adapterType ?? 'database'}
-        onChange={(value) =>
-          onUpdate({
-            metadata: { ...node.metadata, adapterType: value },
-          })
-        }
-      >
-        {adapterTypes.map((type) => (
-          <Select.Option key={type} value={type}>
-            {type.charAt(0).toUpperCase() + type.slice(1).replace(/-/g, ' ')}
-          </Select.Option>
-        ))}
-      </Select>
-    </Form.Item>
-  );
-};
-
-/**
- * Type-specific inspector based on node type
- */
-const TypeSpecificInspector = ({ node, onUpdate }: CommonFieldsProps) => {
-  const inspectorType = getInspectorType(node);
-
-  switch (inspectorType) {
+const TypeSpecificInspector = ({
+  node,
+  onUpdate,
+}: {
+  node: BANode;
+  onUpdate: (updates: Partial<Omit<BANode, 'id'>>) => void;
+}) => {
+  const type = getInspectorType(node);
+  switch (type) {
     case 'http':
       return <HttpInspector node={node} onUpdate={onUpdate} />;
     case 'structural':
       return <StructuralInspector node={node} onUpdate={onUpdate} />;
-    case 'database':
-      return <DatabaseFields node={node} onUpdate={onUpdate} />;
-    case 'simple':
-      return node.type === 'driven-adapter' ? <AdapterFields node={node} onUpdate={onUpdate} /> : null;
     default:
       return null;
   }
 };
 
-/**
- * Empty state when no node is selected
- */
-const EmptyInspector = () => {
-  useAppStore((s) => s.language);
+/* ------------------------------------------------------------------ */
+/*  Full inspector — granular Zustand selectors                       */
+/* ------------------------------------------------------------------ */
 
-  return (
-    <Empty
-      image={Empty.PRESENTED_IMAGE_SIMPLE}
-      description={
-        <Text type='secondary' className='ba-empty-inspector__text'>
-          {t('rightsidebar.helpText')}
-        </Text>
-      }
-      className='ba-empty-inspector'
-    />
-  );
-};
-
-/**
- * Node inspector panel
- */
-const NodeInspector = ({ node }: { node: BANode }) => {
+const NodeInspector = () => {
+  // Granular selectors: only subscribe to selectedNodeId and graph.nodes
+  const selectedNodeId = useAppStore((s) => s.selectedNodeId);
+  const graphNodes = useAppStore((s) => s.graph.nodes);
   const updateGraphNode = useAppStore((s) => s.updateGraphNode);
   const removeGraphNode = useAppStore((s) => s.removeGraphNode);
   const selectNode = useAppStore((s) => s.selectNode);
-  useAppStore((s) => s.language);
 
-  const handleUpdate = (updates: Partial<Omit<BANode, 'id'>>) => {
-    updateGraphNode(node.id, updates);
-  };
+  // Derive selected node from stable references
+  const selectedNode = useMemo(
+    () => (selectedNodeId ? graphNodes.find((n) => n.id === selectedNodeId) ?? null : null),
+    [selectedNodeId, graphNodes]
+  );
 
-  const handleDelete = () => {
-    removeGraphNode(node.id);
-    selectNode(null);
-  };
+  // Stable update callback — uses node id from closure, not full object
+  const handleUpdate = useCallback(
+    (updates: Partial<Omit<BANode, 'id'>>) => {
+      if (selectedNodeId) updateGraphNode(selectedNodeId, updates);
+    },
+    [selectedNodeId, updateGraphNode]
+  );
+
+  const handleDelete = useCallback(() => {
+    if (selectedNodeId) {
+      removeGraphNode(selectedNodeId);
+      selectNode(null);
+    }
+  }, [selectedNodeId, removeGraphNode, selectNode]);
+
+  if (!selectedNode) return <EmptyInspector />;
 
   return (
-    <Flex vertical>
-      <NodeTypeBadge type={node.type} />
-
-      <Form layout='vertical' size='small'>
-        <CommonFields node={node} onUpdate={handleUpdate} />
-      </Form>
-
-      <Divider />
-
-      {/* Type-specific inspector (HTTP or Structural) */}
-      <TypeSpecificInspector node={node} onUpdate={handleUpdate} />
-
-      <Divider />
-
-      <Button
-        danger
-        block
-        icon={<DeleteOutlined />}
-        onClick={handleDelete}
-        className='ba-delete-btn'
-      >
-        {t('rightsidebar.deleteNode')}
+    <Flex vertical gap={0}>
+      <NodeTypeBadge node={selectedNode} />
+      <CommonFields node={selectedNode} onUpdate={handleUpdate} />
+      <Divider style={{ margin: '12px 0' }} />
+      <TypeSpecificInspector node={selectedNode} onUpdate={handleUpdate} />
+      <Divider style={{ margin: '12px 0' }} />
+      <Button danger block icon={<DeleteOutlined />} onClick={handleDelete} className='ba-delete-btn'>
+        {t('inspector.delete')}
       </Button>
     </Flex>
   );
 };
 
-const RightSidebar = () => {
-  useAppStore((s) => s.language);
-  const selectedNode = useAppStore((s) => s.getSelectedNode());
+const EmptyInspector = () => (
+  <Empty
+    className='ba-empty-inspector'
+    image={Empty.PRESENTED_IMAGE_SIMPLE}
+    description={
+      <Text type='secondary' className='ba-empty-inspector__text'>
+        {t('inspector.emptyMessage')}
+      </Text>
+    }
+  />
+);
+
+/* ------------------------------------------------------------------ */
+/*  Panel content wrapper                                             */
+/* ------------------------------------------------------------------ */
+
+const SidebarContent = () => (
+  <Flex vertical style={{ height: '100%', overflow: 'hidden' }}>
+    <Flex align='center' gap={6} className='ba-right-sidebar__header'>
+      <EyeOutlined style={{ fontSize: 13, color: 'var(--ba-color-text-secondary)' }} />
+      <Text className='ba-right-sidebar__title'>{t('inspector.title')}</Text>
+    </Flex>
+    <Flex vertical className='ba-right-sidebar__body ba-scrollable' style={{ flex: 1, overflowY: 'auto' }}>
+      <NodeInspector />
+    </Flex>
+  </Flex>
+);
+
+/* ------------------------------------------------------------------ */
+/*  Exported wrapper                                                  */
+/* ------------------------------------------------------------------ */
+
+const SIDER_STYLE = { overflow: 'hidden' };
+const DRAWER_BODY_STYLE = { body: { padding: 0 } };
+
+export default function RightSidebar({ isDesktop }: RightSidebarProps) {
+  const open = useAppStore((s) => s.rightDrawerOpen);
+  const setOpen = useAppStore((s) => s.setRightDrawerOpen);
+  const selectedNodeId = useAppStore((s) => s.selectedNodeId);
+
+  const drawerOpen = open || !!selectedNodeId;
+
+  const handleClose = useCallback(() => setOpen(false), [setOpen]);
+
+  if (isDesktop) {
+    return (
+      <Sider width={280} theme='light' className='ba-right-sider' style={SIDER_STYLE}>
+        <SidebarContent />
+      </Sider>
+    );
+  }
 
   return (
-    <RightSider width={280} className='ba-right-sidebar'>
-      <Flex vertical className='ba-right-sidebar__header'>
-        <Title level={5} className='ba-right-sidebar__title'>
-          {t('rightsidebar.title')}
-        </Title>
-      </Flex>
-
-      {selectedNode ? <NodeInspector node={selectedNode} /> : <EmptyInspector />}
-    </RightSider>
+    <Drawer
+      open={drawerOpen}
+      onClose={handleClose}
+      placement='right'
+      width={300}
+      styles={DRAWER_BODY_STYLE}
+      destroyOnClose={false}
+    >
+      <SidebarContent />
+    </Drawer>
   );
-};
-
-export default RightSidebar;
+}

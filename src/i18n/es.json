@@ -13,9 +13,25 @@
       "placeholder": "Selecciona arquitectura"
     },
     "generate": "Generar",
+    "settings": {
+      "label": "Ajustes",
+      "title": "Ajustes del Proyecto",
+      "projectName": "Nombre del Proyecto",
+      "projectNamePlaceholder": "mi-api-genial",
+      "basePackage": "Paquete Base",
+      "basePackagePlaceholder": "com.ejemplo.app"
+    },
     "popover": {
       "seeMoreDetails": "Ver más detalles →"
     }
+  },
+  "generate": {
+    "missingConfig": "Configura stack, arquitectura, nombre del proyecto y paquete base primero.",
+    "hasErrors": "Resuelve los errores de validación antes de generar.",
+    "emptyGraph": "Agrega al menos un componente para generar el proyecto.",
+    "unsupported": "Esta combinación de stack/arquitectura aún no está soportada.",
+    "failed": "La generación falló. Revisa la consola.",
+    "success": "Proyecto generado. Tu descarga está iniciando."
   },
   "stacks": {
     "spring_boot": {
@@ -39,6 +55,8 @@
     "title": "Componentes",
     "helpText": "Arrastra los componentes al lienzo para diseñar tu arquitectura de backend",
     "selectConfiguration": "Seleccione una configuración en el encabezado para ver los componentes disponibles",
+    "emptyMessage": "Selecciona un stack y arquitectura para ver los componentes",
+    "dragHint": "Arrastra componentes al lienzo",
     "componentTypes": {
       "endpoint": "Punto de acceso",
       "service": "Servicio",
@@ -72,6 +90,16 @@
     }
   },
   "inspector": {
+    "title": "Inspector",
+    "label": "Etiqueta",
+    "delete": "Eliminar Componente",
+    "emptyMessage": "Selecciona un componente en el lienzo para inspeccionar",
+    "database": {
+      "type": "Tipo de Base de Datos"
+    },
+    "adapter": {
+      "type": "Tipo de Adaptador"
+    },
     "http": {
       "title": "Configuración de Endpoint HTTP",
       "description": "Configura el punto de entrada HTTP (interfaz tipo Postman)",
@@ -128,7 +156,11 @@
   },
   "canvas": {
     "selectConfiguration": "Configura tu proyecto para comenzar a diseñar",
-    "configurationHint": "Selecciona un stack, versión y estilo de arquitectura en el encabezado"
+    "configurationHint": "Selecciona un stack, versión y estilo de arquitectura en el encabezado",
+    "emptyTitle": "Sin componentes aún",
+    "emptyHint": "Arrastra componentes desde la barra lateral",
+    "configureFirst": "Configura tu proyecto primero",
+    "configureHint": "Selecciona un stack, versión y arquitectura arriba"
   },
   "validation": {
     "or": "o",

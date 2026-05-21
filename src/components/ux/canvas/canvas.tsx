@@ -1,233 +1,192 @@
 /**
- * Canvas Component - Graph Engine Core
+ * Canvas — React Flow graph editor
  *
- * Visual representation of the internal graph engine.
- * Handles node rendering, edge connections, drag-and-drop,
- * and selection state.
+ * Always fills the center column. Protected from sidebar overflow by
+ * the parent flex layout (min-width: 0 on center column).
  */
 
-import { useCallback, useMemo } from 'preact/hooks';
+import { useCallback, useRef } from 'preact/hooks';
 import {
   ReactFlow,
   Background,
   Controls,
   MiniMap,
-  BackgroundVariant,
   useReactFlow,
-  type OnNodesChange,
-  type OnEdgesChange,
   type NodeChange,
   type EdgeChange,
-  applyNodeChanges,
-  applyEdgeChanges,
-  type Node,
+  type Connection,
 } from '@xyflow/react';
-import '@xyflow/react/dist/style.css';
-import { useAppStore, type FlowNodeData } from '@/store/app.store';
-import type { NodeType } from '@/core/engine/types/graph/index.graph';
-import BackArchNode from './backarch-node';
-import { Typography, Empty, Flex } from 'antd';
+import { Typography, Flex, Empty } from 'antd';
+import { AppstoreAddOutlined } from '@ant-design/icons';
+
+import { useAppStore } from '@/store/app.store';
 import { t } from '@/i18n/index.i18n';
+import BackArchNode from './backarch-node';
+
+import '@xyflow/react/dist/style.css';
+import '@/styles/canvas/canvas.css';
 
 const { Text } = Typography;
 
-/**
- * Custom node types registration
- */
-const nodeTypes = {
-  backarchNode: BackArchNode,
-};
+const nodeTypes = { backarchNode: BackArchNode };
 
-/**
- * Empty canvas overlay when no architecture is selected
- */
+/* ------------------------------------------------------------------ */
+/*  Empty-state overlay                                               */
+/* ------------------------------------------------------------------ */
+
 const EmptyCanvasOverlay = () => {
-  useAppStore((s) => s.language);
+  const selectedStack = useAppStore((s) => s.selectedStack);
+  const selectedVersion = useAppStore((s) => s.selectedVersion);
+  const selectedArchitecture = useAppStore((s) => s.selectedArchitecture);
+  const nodeCount = useAppStore((s) => s.nodes.length);
+
+  const configComplete = !!(selectedStack && selectedVersion && selectedArchitecture);
+
+  if (configComplete && nodeCount > 0) return null;
 
   return (
-    <Flex align='center' justify='center' className='ba-canvas__overlay'>
+    <div className='ba-canvas__overlay'>
       <Empty
-        image={Empty.PRESENTED_IMAGE_SIMPLE}
+        image={<AppstoreAddOutlined style={{ fontSize: 48, color: 'var(--ba-color-text-secondary)' }} />}
         description={
-          <Flex vertical>
-            <Text type='secondary' className='ba-canvas__empty-title'>
-              {t('canvas.selectConfiguration')}
+          <Flex vertical align='center' gap={4}>
+            <Text strong className='ba-canvas__empty-title'>
+              {configComplete
+                ? t('canvas.emptyTitle')
+                : t('canvas.configureFirst')}
             </Text>
             <Text type='secondary' className='ba-canvas__empty-hint'>
-              {t('canvas.configurationHint')}
+              {configComplete
+                ? t('canvas.emptyHint')
+                : t('canvas.configureHint')}
             </Text>
           </Flex>
         }
       />
-    </Flex>
+    </div>
   );
 };
 
-const Canvas = () => {
+/* ------------------------------------------------------------------ */
+/*  Main Canvas                                                       */
+/* ------------------------------------------------------------------ */
+
+export default function Canvas() {
+  const wrapperRef = useRef<HTMLDivElement>(null);
+  const { screenToFlowPosition } = useReactFlow();
+
+  // ---- Store ----
   const nodes = useAppStore((s) => s.nodes);
   const edges = useAppStore((s) => s.edges);
-  const selectedNodeId = useAppStore((s) => s.selectedNodeId);
   const addGraphNode = useAppStore((s) => s.addGraphNode);
   const connectGraphNodes = useAppStore((s) => s.connectGraphNodes);
   const disconnectGraphNodes = useAppStore((s) => s.disconnectGraphNodes);
+  const updateNodePositions = useAppStore((s) => s.updateNodePositions);
   const selectNode = useAppStore((s) => s.selectNode);
-  const removeGraphNode = useAppStore((s) => s.removeGraphNode);
-  const isConfigComplete = useAppStore((s) => s.isConfigurationComplete());
-  useAppStore((s) => s.language);
+  const selectedStack = useAppStore((s) => s.selectedStack);
+  const selectedVersion = useAppStore((s) => s.selectedVersion);
+  const selectedArchitecture = useAppStore((s) => s.selectedArchitecture);
 
-  const { screenToFlowPosition } = useReactFlow();
+  const configComplete = !!(selectedStack && selectedVersion && selectedArchitecture);
 
-  /**
-   * Update node selection state in the store
-   */
-  const nodesWithSelection = useMemo(() => {
-    return nodes.map((node) => ({
-      ...node,
-      selected: node.id === selectedNodeId,
-    }));
-  }, [nodes, selectedNodeId]);
-
-  /**
-   * Handle node changes (position, selection, removal)
-   */
-  const onNodesChange: OnNodesChange = useCallback(
+  // ---- React Flow change handlers ----
+  const onNodesChange = useCallback(
     (changes: NodeChange[]) => {
-      for (const change of changes) {
-        if (change.type === 'select') {
-          if (change.selected) {
-            selectNode(change.id);
-          } else if (selectedNodeId === change.id) {
-            selectNode(null);
-          }
-        }
+      const positionChanges = changes
+        .filter(
+          (c): c is NodeChange & { type: 'position'; id: string; position: { x: number; y: number } } =>
+            c.type === 'position' && 'position' in c && !!c.position
+        )
+        .map((c) => ({ id: c.id, position: c.position }));
 
-        if (change.type === 'remove') {
-          removeGraphNode(change.id);
-        }
+      if (positionChanges.length) updateNodePositions(positionChanges);
+
+      // Handle selection
+      const selectionChange = changes.find((c) => c.type === 'select') as
+        | (NodeChange & { type: 'select'; id: string; selected: boolean })
+        | undefined;
+      if (selectionChange) {
+        selectNode(selectionChange.selected ? selectionChange.id : null);
       }
 
-      const hasPositionChanges = changes.some(
-        (c) => c.type === 'position' && c.position
-      );
-
-      if (hasPositionChanges) {
-        useAppStore.setState((state) => ({
-          nodes: applyNodeChanges(changes, state.nodes) as Node<FlowNodeData>[],
-        }));
-      }
+      // Handle removals
+      const removals = changes.filter((c) => c.type === 'remove');
+      removals.forEach((r) => {
+        if ('id' in r) {
+          const store = useAppStore.getState();
+          store.removeGraphNode(r.id as string);
+        }
+      });
     },
-    [selectedNodeId, selectNode, removeGraphNode]
+    [updateNodePositions, selectNode]
   );
 
-  /**
-   * Handle edge changes (removal)
-   */
-  const onEdgesChange: OnEdgesChange = useCallback(
+  const onEdgesChange = useCallback(
     (changes: EdgeChange[]) => {
-      for (const change of changes) {
-        if (change.type === 'remove') {
-          disconnectGraphNodes(change.id);
+      changes.forEach((c) => {
+        if (c.type === 'remove' && 'id' in c) {
+          disconnectGraphNodes(c.id as string);
         }
-      }
-
-      useAppStore.setState((state) => ({
-        edges: applyEdgeChanges(changes, state.edges),
-      }));
+      });
     },
     [disconnectGraphNodes]
   );
 
-  /**
-   * Handle drag over for drop target indication
-   */
-  const onDragOver = useCallback((event: DragEvent) => {
-    event.preventDefault();
-    if (event.dataTransfer) {
-      event.dataTransfer.dropEffect = 'move';
-    }
-  }, []);
-
-  /**
-   * Handle drop to create new nodes
-   */
-  const onDrop = useCallback(
-    (event: DragEvent) => {
-      event.preventDefault();
-
-      if (!isConfigComplete || !event.dataTransfer) return;
-
-      const type = event.dataTransfer.getData('application/backarch-node');
-      if (!type) return;
-
-      const position = screenToFlowPosition({
-        x: event.clientX,
-        y: event.clientY,
-      });
-
-      addGraphNode(type as NodeType, position);
+  const onConnect = useCallback(
+    (connection: Connection) => {
+      if (connection.source && connection.target) {
+        connectGraphNodes(connection);
+      }
     },
-    [screenToFlowPosition, addGraphNode, isConfigComplete]
+    [connectGraphNodes]
   );
 
-  /**
-   * Handle canvas click to deselect nodes
-   */
-  const onPaneClick = useCallback(() => {
-    selectNode(null);
-  }, [selectNode]);
+  // ---- Drag & Drop ----
+  const onDragOver = useCallback((e: DragEvent) => {
+    e.preventDefault();
+    if (e.dataTransfer) e.dataTransfer.dropEffect = 'move';
+  }, []);
+
+  const onDrop = useCallback(
+    (e: DragEvent) => {
+      e.preventDefault();
+      if (!configComplete || !e.dataTransfer) return;
+
+      const nodeType = e.dataTransfer.getData('application/backarch-node');
+      if (!nodeType) return;
+
+      const position = screenToFlowPosition({ x: e.clientX, y: e.clientY });
+      addGraphNode(nodeType as any, position);
+    },
+    [addGraphNode, configComplete, screenToFlowPosition]
+  );
+
+  const onPaneClick = useCallback(() => selectNode(null), [selectNode]);
 
   return (
-    <Flex className='ba-canvas'>
-      {!isConfigComplete && <EmptyCanvasOverlay />}
-
+    <div className='ba-canvas' ref={wrapperRef}>
+      <EmptyCanvasOverlay />
       <ReactFlow
-        nodes={nodesWithSelection}
+        nodes={nodes}
         edges={edges}
         nodeTypes={nodeTypes}
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
-        onConnect={connectGraphNodes}
-        onDrop={onDrop}
+        onConnect={onConnect}
         onDragOver={onDragOver}
+        onDrop={onDrop}
         onPaneClick={onPaneClick}
         fitView
         proOptions={{ hideAttribution: true }}
-        deleteKeyCode={['Backspace', 'Delete']}
-        selectionKeyCode={null}
-        multiSelectionKeyCode={null}
-        defaultEdgeOptions={{
-          animated: true,
-          style: { strokeWidth: 2, stroke: '#1890ff' },
-        }}
       >
-        <Background
-          variant={BackgroundVariant.Dots}
-          gap={20}
-          size={1}
-          color='#cbd5e1'
-        />
+        <Background />
         <Controls />
         <MiniMap
-          nodeColor={(node) => {
-            const data = node.data as FlowNodeData;
-            switch (data.nodeType) {
-              case 'endpoint':
-                return '#c6e8fe';
-              case 'service':
-                return '#cbfed8';
-              case 'repository':
-                return '#d7afff';
-              case 'database':
-                return '#ff9c9c';
-              default:
-                return '#e2e8f0';
-            }
-          }}
-          maskColor='rgba(0, 0, 0, 0.1)'
+          nodeColor='var(--ba-color-primary-light)'
+          maskColor='rgba(245, 247, 250, 0.7)'
+          style={{ borderRadius: 8 }}
         />
       </ReactFlow>
-    </Flex>
+    </div>
   );
-};
-
-export default Canvas;
+}

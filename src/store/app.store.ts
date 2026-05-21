@@ -59,6 +59,8 @@ interface AppState {
 
   // UI State
   selectedNodeId: string | null;
+  leftDrawerOpen: boolean;
+  rightDrawerOpen: boolean;
 
   // Validation
   validationResult: ValidationResult;
@@ -84,6 +86,8 @@ interface AppState {
 
   // Actions - UI
   selectNode: (nodeId: string | null) => void;
+  setLeftDrawerOpen: (open: boolean) => void;
+  setRightDrawerOpen: (open: boolean) => void;
 
   // Selectors
   getSelectedNode: () => BANode | null;
@@ -135,6 +139,8 @@ export const useAppStore = create<AppState>((set, get) => ({
 
   // Initial state - UI
   selectedNodeId: null,
+  leftDrawerOpen: false,
+  rightDrawerOpen: false,
 
   // Initial state - validation
   validationResult: {
@@ -387,23 +393,31 @@ export const useAppStore = create<AppState>((set, get) => ({
   },
 
   updateNodePositions: (changes) => {
-    set((state) => ({
-      nodes: state.nodes.map((node) => {
+    set((state) => {
+      let changed = false;
+      const newNodes = state.nodes.map((node) => {
         const change = changes.find((c) => c.id === node.id);
-        if (change) {
-          return {
-            ...node,
-            position: change.position,
-          };
+        if (change && (node.position.x !== change.position.x || node.position.y !== change.position.y)) {
+          changed = true;
+          return { ...node, position: change.position };
         }
         return node;
-      }),
-    }));
+      });
+      return changed ? { nodes: newNodes } : {};
+    });
   },
 
   // UI actions
   selectNode: (nodeId: string | null) => {
     set({ selectedNodeId: nodeId });
+  },
+
+  setLeftDrawerOpen: (open: boolean) => {
+    set({ leftDrawerOpen: open });
+  },
+
+  setRightDrawerOpen: (open: boolean) => {
+    set({ rightDrawerOpen: open });
   },
 
   // Selectors
